@@ -1,3 +1,3 @@
 # Development only. deproi.py itself uses the Python standard library exclusively.
-pytest==9.0.3
-ruff==0.14.14
+pytest==9.2.0
+ruff==0.17.4
