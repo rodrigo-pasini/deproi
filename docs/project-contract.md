@@ -32,6 +32,8 @@ services:
 
 Make the endpoint check what matters (the app answers, it reaches the database) and keep it fast. `curl` must exist in the image, or use a tiny script in your language instead.
 
+Other services built from the same image (a worker, a scheduler) inherit a Dockerfile `HEALTHCHECK` that probes a port they do not serve, and show `unhealthy` forever. Deproi only waits for the web service, but `docker ps` and `docker compose up --wait` are misled: give those services `healthcheck: { disable: true }` or a check of their own.
+
 Containers should also stop quickly when Docker sends `SIGTERM`. If your process runs as PID 1 and ignores it (common with plain Python or Node), every recreate waits Docker's 10-second timeout: add `init: true` to the service.
 
 ## 2. Built images tagged with `${DEPROI_TAG}`

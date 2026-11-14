@@ -32,6 +32,8 @@ services:
 
 Faça o endpoint verificar o que importa (o app responde, ele alcança o banco de dados) e mantenha-o rápido. O `curl` precisa existir na imagem; se não existir, use um script pequeno na sua linguagem.
 
+Outros serviços construídos com a mesma imagem (um worker, um agendador) herdam o `HEALTHCHECK` do Dockerfile, que testa uma porta que eles não servem, e ficam `unhealthy` para sempre. O Deproi só espera o serviço web, mas o `docker ps` e o `docker compose up --wait` se enganam: dê a esses serviços `healthcheck: { disable: true }` ou um healthcheck próprio.
+
 Os contêineres também devem parar rápido quando o Docker envia `SIGTERM`. Se o seu processo roda como PID 1 e ignora o sinal (comum com Python ou Node puros), cada recriação espera o timeout de 10 segundos do Docker: adicione `init: true` ao serviço.
 
 ## 2. Imagens construídas com a tag `${DEPROI_TAG}`
