@@ -98,6 +98,8 @@ Rode de novo o `create-deploy-key.sh` (💻) e o `prepare-server.sh --public-key
 
 Substitua o `deploy/deproi.py` pela nova release (ou faça merge do pull request aberto pelo `deproi-update.yml`) e faça push. O próximo deploy de cada ambiente a instala sozinho (`script=updated:…`). Leia as notas da release antes: elas listam qualquer chave de configuração nova.
 
+O pull request do atualizador começa sem checks, porque o GitHub não roda workflows em pull requests abertos com o token do próprio workflow. Se a `main` exige checks, feche e reabra o pull request: isso faz eles rodarem.
+
 ## Conferir um ambiente
 
 ```bash

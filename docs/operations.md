@@ -98,6 +98,8 @@ Run `create-deploy-key.sh` again (💻) and `prepare-server.sh --public-key` wit
 
 Replace `deploy/deproi.py` with the new release (or merge the pull request opened by `deproi-update.yml`) and push. The next deploy of each environment installs it by itself (`script=updated:…`). Read the release notes first: they list any new configuration key.
 
+The updater's pull request starts with no checks, because GitHub does not run workflows on pull requests opened with a workflow's own token. If `main` requires checks, close and reopen the pull request: that runs them.
+
 ## Check an environment
 
 ```bash

@@ -131,7 +131,7 @@ Abra **Actions → Deploy production**. O resumo do job mostra a mensagem e a li
 
 - **Settings → Environments → production → Required reviewers**: alguém aprova cada deploy.
 - **Settings → Rules**: proteja a `main` (pull requests, checks obrigatórios). Acesso de push a ela equivale a root no servidor.
-- **Settings → Actions → General**: permita que o GitHub Actions crie pull requests, se você usa o `deproi-update.yml`.
+- **Settings → Actions → General**: permita que o GitHub Actions crie pull requests, se você usa o `deproi-update.yml`. O GitHub não roda workflows em pull requests abertos com o token do próprio workflow; com checks obrigatórios, feche e reabra o pull request do atualizador para que eles rodem.
 - Para pausar os deploys de novo mais tarde: defina `DEPROI_PAUSED` = `true` no environment.
 
 ## Adicionar os arquivos de workflow
