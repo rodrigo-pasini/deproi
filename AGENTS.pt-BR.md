@@ -86,7 +86,7 @@ Para configurar deploys automáticos com o Deproi eu preciso de:
 
 ### 5. Mude o repositório
 
-Trabalhe numa branch, nunca numa branch de deploy.
+Trabalhe numa branch, nunca numa branch de deploy. Como referência de uma configuração pronta e correta, leia o [deproi-demo](https://github.com/rodrigo-pasini/deproi-demo): workflows renderizados e sem edição, `deploy/deproi.py` sem alteração, a configuração do servidor em `docs/deploy/`.
 
 1. **Baixe uma release fixada do Deproi** numa pasta temporária e verifique-a:
 

@@ -10,7 +10,7 @@ Cerca de 20 minutos por ambiente. Você trabalha em três lugares, marcados em c
 | 💻 **máquina** | O seu computador, com `ssh-keygen` e o GitHub CLI (`gh auth login` já feito). |
 | 🐙 **GitHub** | O repositório do projeto no github.com. |
 
-Nos exemplos, o ambiente se chama `myapp-prod`, faz deploy da branch `main`, o GitHub environment dele é `production` e o Deproi está na versão `0.2.0` (use a [versão mais recente](https://github.com/rodrigo-pasini/deproi/releases)). Use os seus próprios nomes: `<app>-<env>` é um bom padrão.
+Nos exemplos, o ambiente se chama `myapp-prod`, faz deploy da branch `main`, o GitHub environment dele é `production` e o Deproi está na versão `0.2.0` (use a [versão mais recente](https://github.com/rodrigo-pasini/deproi/releases)). Use os seus próprios nomes: `<app>-<env>` é um bom padrão. O [deproi-demo](https://github.com/rodrigo-pasini/deproi-demo) é um repositório configurado exatamente assim, se você quiser ver o resultado final antes.
 
 ## Antes de começar
 

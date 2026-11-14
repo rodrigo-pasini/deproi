@@ -26,6 +26,10 @@ Todas as mudanças relevantes do Deproi ficam registradas aqui. O formato segue 
 - Migrar de um deploy existente (volumes, portas, órfãos, credenciais antigas); servidores compartilhados (portas, nomes de imagem); serviços protegidos (ordem, reversão, parada graciosa, política de restart); plano B e comandos de log corrigidos; receita para Node.js.
 - Achados de duas implantações piloto feitas por agentes de IA (Django + Postgres, Node + Redis com worker protegido).
 
+### Nota de atualização
+
+- Projetos que renderizaram o `deproi-update.yml` da 0.1.0 precisam renderizá-lo de novo: o atualizador da 0.1.0 não consegue conferir releases cujo checksum cobre mais de um arquivo.
+
 ## [0.1.0] - 2026-11-14
 
 ### Adicionado

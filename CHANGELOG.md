@@ -26,6 +26,10 @@ All notable changes to Deproi are documented here. The format follows [Keep a Ch
 - Moving from an existing deployment (volumes, ports, orphans, old credentials); shared servers (ports, image names); protected services (order, rollback, graceful stop, restart policy); plan B and log commands fixed; Node.js recipe.
 - Findings from two pilot implementations by AI agents (Django + Postgres, Node + Redis with a protected worker).
 
+### Upgrade note
+
+- Projects that rendered `deproi-update.yml` from 0.1.0 must render it again: the 0.1.0 updater cannot verify releases that checksum more than one file.
+
 ## [0.1.0] - 2026-11-14
 
 ### Added

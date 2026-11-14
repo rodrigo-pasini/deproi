@@ -2,7 +2,7 @@
 
 # Deproi example
 
-A tiny project that follows the [project contract](../docs/project-contract.md): a web service with a health check, a "migration" and a long-running worker. Deproi's end-to-end test deploys it for real; copy it as a starting point.
+A tiny project that follows the [project contract](../docs/project-contract.md): a web service with a health check, a "migration" and a long-running worker. Deproi's end-to-end test deploys it for real; copy it as a starting point. The same app, set up as a standalone repository with its workflows and the updater's pull request, is [deproi-demo](https://github.com/rodrigo-pasini/deproi-demo).
 
 | File | What it shows |
 |---|---|

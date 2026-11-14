@@ -7,6 +7,8 @@
 [![CI](https://github.com/rodrigo-pasini/deproi/actions/workflows/ci.yml/badge.svg)](https://github.com/rodrigo-pasini/deproi/actions/workflows/ci.yml)
 [![Licença: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
+**Veja num repositório de verdade:** o [deproi-demo](https://github.com/rodrigo-pasini/deproi-demo) é um app pequeno configurado com o Deproi — workflows, configuração e o pull request que o atualizador abre.
+
 <p align="center"><img src="docs/img/pt-BR/pipeline.svg" alt="git push → GitHub Actions → chave SSH presa a um comando → sudo deproi → build e ganchos → recriar → saudável" width="100%"></p>
 
 ## Em 30 segundos
@@ -68,7 +70,7 @@ scripts/render-workflow.sh deploy --name myapp-prod --branch main --environment 
 4. Um **arquivo env** versionado com `COMPOSE_PROJECT_NAME`.
 5. Uma cópia do **`deproi.py`** no projeto (`deploy/deproi.py`).
 
-[O contrato do projeto](docs/project-contract.pt-BR.md) explica cada item, e [o exemplo](example/) tem todos eles.
+[O contrato do projeto](docs/project-contract.pt-BR.md) explica cada item, e [o exemplo](example/) tem todos eles. O [deproi-demo](https://github.com/rodrigo-pasini/deproi-demo) mostra tudo isso num repositório completo.
 
 ## A configuração num relance
 

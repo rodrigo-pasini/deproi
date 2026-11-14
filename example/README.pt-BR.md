@@ -2,7 +2,7 @@
 
 # Exemplo do Deproi
 
-Um projeto mínimo que segue o [contrato do projeto](../docs/project-contract.pt-BR.md): um serviço web com healthcheck, uma "migration" e um worker de longa duração. O teste de ponta a ponta do Deproi faz o deploy dele de verdade; copie-o como ponto de partida.
+Um projeto mínimo que segue o [contrato do projeto](../docs/project-contract.pt-BR.md): um serviço web com healthcheck, uma "migration" e um worker de longa duração. O teste de ponta a ponta do Deproi faz o deploy dele de verdade; copie-o como ponto de partida. O mesmo app, montado como um repositório próprio com os workflows e o pull request do atualizador, é o [deproi-demo](https://github.com/rodrigo-pasini/deproi-demo).
 
 | Arquivo | O que mostra |
 |---|---|
