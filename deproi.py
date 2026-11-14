@@ -171,6 +171,7 @@ MESSAGES: dict = {
         "protected_busy": "{service} is busy: it stays on the previous version and updates on the next deploy.",
         "protected_no_answer": "{service} did not answer its busy check: it stays on the previous version. Check it on the server.",
         "protected_idle": "{service} is idle: it joins the recreation.",
+        "protected_absent": "{service} has no container yet: it is created.",
         "image_before": "Image in use before the deploy: {image}",
         "none": "(none)",
         "republish": "Same commit already live: the services are force-recreated.",
@@ -186,7 +187,7 @@ MESSAGES: dict = {
         "rollback_failed": "Version {commit} did not become healthy and going back to {previous} did not work either — the environment is down. Follow plan B: {docs}",
         "cleanup_failed": "Could not list the images; cleanup is left for the next deploy.",
         "unexpected": "Unexpected error at step {step} ({error}) — check the environment and, if needed, follow plan B: {docs}",
-        "success": "{name} published: commit {commit} is live{where} ({minutes} min).",
+        "success": "{name} published: commit {commit} is live{where} ({duration}).",
         "success_deferred": "{name} published: commit {commit}. Busy protected services ({services}) stayed on the previous version; they update on the next deploy.",
         "where": " at {url}",
         "bs_off": "off on this server",
@@ -296,6 +297,7 @@ MESSAGES: dict = {
         "protected_busy": "{service} está ocupado: fica na versão anterior e atualiza no próximo deploy.",
         "protected_no_answer": "{service} não respondeu à conferência de ocupação: fica na versão anterior. Confira-o no servidor.",
         "protected_idle": "{service} está livre: entra na recriação.",
+        "protected_absent": "{service} ainda não tem contêiner: é criado.",
         "image_before": "Imagem em uso antes do deploy: {image}",
         "none": "(nenhuma)",
         "republish": "Mesmo commit que já está no ar: os serviços são recriados à força.",
@@ -311,7 +313,7 @@ MESSAGES: dict = {
         "rollback_failed": "A versão {commit} não ficou saudável e a volta para {previous} também não — o ambiente está fora do ar. Siga o plano B: {docs}",
         "cleanup_failed": "Não consegui listar as imagens; a limpeza fica para o próximo deploy.",
         "unexpected": "Erro inesperado no passo {step} ({error}) — confira o ambiente e, se preciso, siga o plano B: {docs}",
-        "success": "{name} publicado: commit {commit} no ar{where} ({minutes} min).",
+        "success": "{name} publicado: commit {commit} no ar{where} ({duration}).",
         "success_deferred": "{name} publicado: commit {commit}. Serviços protegidos ocupados ({services}) ficaram na versão anterior; atualizam no próximo deploy.",
         "where": " em {url}",
         "bs_off": "desligado neste servidor",
@@ -1585,8 +1587,16 @@ def _busy(executor: Executor, container: str, service: ProtectedService) -> str:
 
 
 def prepare_protected(cfg: Config, executor: Executor, service: ProtectedService) -> tuple:
-    """(state, container): stopped | busy | no_answer | idle. ``idle`` may have been quiesced."""
-    ids = container_ids(cfg, executor, service.service) or []
+    """(state, container): absent | stopped | busy | no_answer | idle. ``idle`` may have been quiesced.
+
+    ``absent``: no container yet (first deploy, or a new service) — it is created.
+    ``stopped``: a container exists but is not running — someone stopped it; left alone.
+    """
+    ids = container_ids(cfg, executor, service.service)
+    if ids is None:
+        return "no_answer", ""
+    if not ids:
+        return "absent", ""
     running = [cid for cid in ids if _running(executor, cid)]
     if not running:
         return "stopped", ""
@@ -1626,6 +1636,9 @@ def prepare_all_protected(cfg: Config, executor: Executor, deploy: Deploy) -> li
         elif state == "no_answer":
             deploy.protected[service.service] = "deferred"
             write(t("protected_no_answer", service=service.service))
+        elif state == "absent":
+            joining.append((service, container))
+            write(t("protected_absent", service=service.service))
         else:
             joining.append((service, container))
             write(t("protected_idle", service=service.service))
@@ -1795,7 +1808,7 @@ def roll_back(
     joining = []
     for service, _ in joined:
         state, container = prepare_protected(cfg, executor, service)
-        if state == "idle":
+        if state in ("idle", "absent"):
             joining.append((service, container))
         else:
             # Stays on the new version: its state remains "updated".
@@ -2518,7 +2531,7 @@ class Integrations:
             self.cfg.betterstack and self.cfg.betterstack.errors_application
         )
         if not has_work:
-            return f"post_deploy: {t('no_hooks')} ({previous})"
+            return f"post_deploy: {t('no_hooks')}"
         now = t("post_background", commit=deploy.commit) if live else t("post_not_live")
         return f"post_deploy: {now} ({previous})"
 
@@ -2702,7 +2715,8 @@ def main(
         with group(t("step_cleanup"), clock):
             clean_images(cfg, executor, deploy)
 
-        minutes = max(1, round((clock() - deploy.start) / 60))
+        elapsed = clock() - deploy.start
+        duration = f"{int(elapsed)} s" if elapsed < 60 else f"{round(elapsed / 60)} min"
         if deploy.deferred:
             deploy.situation = Situation.SUCCESS_PROTECTED_DEFERRED
             deploy.message = t(
@@ -2711,7 +2725,7 @@ def main(
         else:
             deploy.situation = Situation.SUCCESS
             where = t("where", url=cfg.url) if cfg.url else ""
-            deploy.message = t("success", name=cfg.name, commit=deploy.commit, where=where, minutes=minutes)
+            deploy.message = t("success", name=cfg.name, commit=deploy.commit, where=where, duration=duration)
         if deploy.script.startswith("updated:"):
             deploy.message += t("script_updated_suffix")
     except Stop as stop:

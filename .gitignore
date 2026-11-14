@@ -21,3 +21,6 @@ id_ed25519*
 
 # Internal planning notes (contain details of the origin project) — local only.
 PLANO.md
+
+# Local browser screenshots and logs.
+.playwright-mcp/

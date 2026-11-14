@@ -125,10 +125,10 @@ else
   problem "$SUDOERS is missing"
 fi
 if id deproi > /dev/null 2>&1; then
-  if id -nG deproi | tr ' ' '\n' | grep -qx docker; then
-    problem "user deproi is in the docker group (that is root without sudo)"
+  if [ -S /var/run/docker.sock ] && runuser -u deproi -- test -w /var/run/docker.sock; then
+    problem "user deproi can write /var/run/docker.sock (group $(stat -c %G /var/run/docker.sock)) — that is root without sudo"
   else
-    pass "user deproi exists and is not in the docker group"
+    pass "user deproi exists and cannot use Docker directly"
   fi
 else
   problem "user deproi is missing"

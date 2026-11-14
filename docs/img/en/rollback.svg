@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 380" width="860" height="380" role="img" aria-label="A broken version never stays live">
+<title>A broken version never stays live</title>
+<style>
+  :root, svg {
+    --bg: #ffffff; --ink: #1f2328; --muted: #59636e; --node: #f6f8fa; --edge: #d1d9e0;
+    --accent: #0969da; --accent-soft: #ddf4ff; --ok: #1a7f37; --ok-soft: #dafbe1;
+    --bad: #cf222e; --bad-soft: #ffebe9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root, svg {
+      --bg: #0d1117; --ink: #e6edf3; --muted: #9198a1; --node: #151b23; --edge: #3d444d;
+      --accent: #4493f8; --accent-soft: #0c2d6b; --ok: #3fb950; --ok-soft: #0f3a1e;
+      --bad: #f85149; --bad-soft: #4c1414;
+    }
+  }
+  text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif; fill: var(--ink); }
+  .bg { fill: var(--bg); }
+  .title { font-size: 20px; font-weight: 600; }
+  .caption { font-size: 13px; fill: var(--muted); }
+  .label { font-size: 14px; font-weight: 600; }
+  .sub { font-size: 11.5px; fill: var(--muted); }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .edge { stroke: var(--edge); stroke-width: 2; fill: none; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+
+  @keyframes appear { 0%, 10.00% { opacity: 0; transform: translateY(8px); } 16.00%, 90% { opacity: 1; transform: none; } 97%, 100% { opacity: 0; } }
+  .new { animation: appear 10s ease-out infinite; }
+  @keyframes starting { 0%, 16.00% { opacity: 0; } 19.00%, 34.00% { opacity: 1; } 36.00%, 100% { opacity: 0; } }
+  .starting { animation: starting 10s infinite; }
+  @keyframes unhealthy { 0%, 35.00% { opacity: 0; } 38.00%, 90% { opacity: 1; } 97%, 100% { opacity: 0; } }
+  .unhealthy { animation: unhealthy 10s infinite; }
+  @keyframes newbox { 0%, 35.00% { stroke: var(--accent); fill: var(--accent-soft); } 38.00%, 90% { stroke: var(--bad); fill: var(--bad-soft); } 100% { stroke: var(--accent); fill: var(--accent-soft); } }
+  .newbox { animation: newbox 10s infinite; }
+  @keyframes draw { 0%, 44.00% { stroke-dashoffset: 520; opacity: 1; } 56.00%, 90% { stroke-dashoffset: 0; opacity: 1; } 97%, 100% { opacity: 0; } }
+  .back { stroke-dasharray: 520; animation: draw 10s ease-in-out infinite; }
+  @keyframes backlabel { 0%, 50.00% { opacity: 0; } 54.00%, 90% { opacity: 1; } 97%, 100% { opacity: 0; } }
+  .backlabel { animation: backlabel 10s infinite; }
+  @keyframes oldbox { 0%, 10.00% { fill: var(--ok-soft); stroke: var(--ok); } 16.00%, 56.00% { fill: var(--node); stroke: var(--edge); } 62.00%, 100% { fill: var(--ok-soft); stroke: var(--ok); } }
+  .oldbox { animation: oldbox 10s infinite; }
+  @keyframes restored { 0%, 60.00% { opacity: 0; } 65.00%, 90% { opacity: 1; } 97%, 100% { opacity: 0; } }
+  .restored { animation: restored 10s infinite; }
+</style>
+<rect class="bg" width="860" height="380" rx="16"/>
+
+<text class="title" x="430.0" y="44" text-anchor="middle">A broken version never stays live</text>
+<rect class="oldbox" x="110" y="96" width="220" height="92" rx="14" stroke-width="2"/>
+<text class="label mono" x="220.0" y="136" text-anchor="middle">111111111111</text>
+<text class="sub" x="220.0" y="158" text-anchor="middle">live</text>
+<line class="edge" x1="330" y1="142.0" x2="530" y2="142.0"/>
+<path class="edge" d="M522,136.0 L530,142.0 L522,148.0"/>
+<g class="new">
+  <rect class="newbox" x="530" y="96" width="220" height="92" rx="14" stroke-width="2"/>
+  <text class="label mono" x="640.0" y="136" text-anchor="middle">abc123def456</text>
+  <text class="sub" x="640.0" y="158" text-anchor="middle">new commit</text>
+  <text class="sub starting" x="640.0" y="214" text-anchor="middle">health: starting…</text>
+  <text class="label unhealthy" x="640.0" y="214" text-anchor="middle" style="fill: var(--bad)">health: unhealthy ✗</text>
+</g>
+<path class="edge back" d="M640.0,228 C640.0,298 220.0,298 220.0,196" style="stroke: var(--bad); stroke-width: 2.5"/>
+<text class="label backlabel" x="430.0" y="252" text-anchor="middle" style="fill: var(--bad)">↩ rollback</text>
+<g class="restored">
+  <text class="label" x="220.0" y="82" text-anchor="middle" style="fill: var(--ok)">previous version back · healthy ✓</text>
+  <text class="sub mono" x="430.0" y="322" text-anchor="middle">result: FAILED_ROLLED_BACK</text>
+</g>
+<text class="caption" x="430.0" y="358" text-anchor="middle">The previous image and its compose definition come back. You fix the code and push again.</text>
+</svg>

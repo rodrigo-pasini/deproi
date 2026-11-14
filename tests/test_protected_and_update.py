@@ -73,6 +73,18 @@ class TestProtectedServices:
         assert "operator decision" in run.out
         assert all("worker-prod" not in " ".join(c[c.index("up") :]) for c in ups(run.executor))
 
+    def test_absent_service_is_created(self, run):
+        run(FakeExecutor({"com.docker.compose.service=worker-prod": R(0, "")}), overrides=PROTECTED)
+        assert run.code == 0
+        assert "worker-prod has no container yet: it is created." in run.out
+        assert ups(run.executor)[1][-1] == "worker-prod"
+        assert "protected=worker-prod:updated" in run.result
+        assert not run.executor.commands("docker exec")
+
+    def test_docker_error_listing_the_service_is_treated_as_busy(self, run):
+        run(FakeExecutor({"com.docker.compose.service=worker-prod": R(1, "daemon error")}), overrides=PROTECTED)
+        assert "protected=worker-prod:deferred" in run.result
+
     def test_failed_recreate_resumes_the_quiesced_service(self, run):
         run(FakeExecutor(first={" up ": [R(1, "boom"), R(0, "")]}), overrides=PROTECTED)
         assert run.executor.commands("worker resume")

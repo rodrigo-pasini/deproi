@@ -1,0 +1,122 @@
+Deproi 0.1.0 — deproi-example-prod
+::group::Trava
+(Trava: 0 s)
+::endgroup::
+::group::Espaço em disco
+Espaço livre para o Docker: 24.4 GB
+(Espaço em disco: 0 s)
+::endgroup::
+::group::Atualizar o código
+From /srv/origin
+ * branch            main       -> FETCH_HEAD
+   3e02c15..96fcbba  main       -> origin/main
+Updating 3e02c15..96fcbba
+Fast-forward
+ app/server.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+Commit a publicar: 96fcbba03574
+(Atualizar o código: 0 s)
+::endgroup::
+::group::Script de deploy
+Script de deploy em dia (ed99e76e7fd0, versão 0.1.0).
+(Script de deploy: 0 s)
+::endgroup::
+::group::Definição do Compose
+Serviços: web-prod, worker-prod
+(Definição do Compose: 0 s)
+::endgroup::
+::group::Construir a imagem deproi-example:96fcbba03574
+time="2026-11-14T18:25:18Z" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
+#0 building with "default" instance using docker driver
+
+#1 [web-prod internal] load build definition from Dockerfile
+#1 transferring dockerfile: 533B done
+#1 DONE 0.0s
+
+#2 [web-prod internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.2s
+
+#3 [web-prod internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [web-prod 1/4] FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+#4 DONE 0.0s
+
+#5 [web-prod internal] load build context
+#5 transferring context: 1.53kB done
+#5 DONE 0.0s
+
+#6 [web-prod 2/4] WORKDIR /app
+#6 CACHED
+
+#7 [web-prod 3/4] COPY app/ /app/
+#7 CACHED
+
+#8 [web-prod 4/4] RUN mkdir /data && chown nobody /data
+#8 CACHED
+
+#9 [web-prod] exporting to image
+#9 exporting layers done
+#9 writing image sha256:65b8a8c3f717ad2d1fff275b56a6add2729e9d8fcfc632f17305b3b4d9219157 done
+#9 naming to docker.io/library/deproi-example:96fcbba03574 done
+#9 DONE 0.0s
+
+#10 [web-prod] resolving provenance for metadata file
+#10 DONE 0.0s
+time="2026-11-14T18:25:18Z" level=warning msg="current commit information was not captured by the build" error="failed to read current commit information with git rev-parse --is-inside-work-tree"
+ web-prod  Built
+(Construir a imagem deproi-example:96fcbba03574: 0 s)
+::endgroup::
+::group::Healthcheck do web-prod
+Healthcheck encontrado (Dockerfile HEALTHCHECK).
+(Healthcheck do web-prod: 0 s)
+::endgroup::
+::group::Ganchos: pre_migrate
+Nenhum gancho configurado.
+(Ganchos: pre_migrate: 0 s)
+::endgroup::
+::group::Ganchos: migrate
+Gancho schema: python migrate.py
+schema at version 3
+(Ganchos: migrate: 0 s)
+::endgroup::
+::group::Ganchos: post_migrate
+Nenhum gancho configurado.
+(Ganchos: post_migrate: 0 s)
+::endgroup::
+::group::Serviços protegidos
+worker-prod está livre: entra na recriação.
+(Serviços protegidos: 0 s)
+::endgroup::
+::group::Recriar os serviços
+Imagem em uso antes do deploy: 3e02c1525446
+ Container deproi-example-prod-web-prod-1  Recreate
+ Container deproi-example-prod-web-prod-1  Recreated
+ Container deproi-example-prod-web-prod-1  Starting
+ Container deproi-example-prod-web-prod-1  Started
+ Container deproi-example-prod-worker-prod-1  Recreate
+ Container deproi-example-prod-worker-prod-1  Recreated
+ Container deproi-example-prod-worker-prod-1  Starting
+ Container deproi-example-prod-worker-prod-1  Started
+(Recriar os serviços: 1 s)
+::endgroup::
+::group::Esperar o web-prod ficar saudável
+saúde do web-prod: starting
+saúde do web-prod: healthy
+(Esperar o web-prod ficar saudável: 2 s)
+::endgroup::
+::group::Limpar imagens antigas
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Total reclaimed space: 0B
+(Limpar imagens antigas: 0 s)
+::endgroup::
+betterstack: desligado neste servidor
+cloudflare: purga desligada
+webhook: desligado
+post_deploy: Nenhum gancho configurado.
+message: deproi-example-prod publicado: commit 96fcbba03574 no ar em http://127.0.0.1:8080 (4 s).
+result: SUCCESS commit=96fcbba03574 previous=3e02c1525446 duration=4s protected=worker-prod:updated step=cleanup script=up_to_date

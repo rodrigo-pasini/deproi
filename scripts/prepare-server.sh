@@ -117,10 +117,12 @@ else
   ok "created (system user, no password)"
 fi
 passwd -l "$DEPLOY_USER" > /dev/null 2>&1 || true
-if id -nG "$DEPLOY_USER" | tr ' ' '\n' | grep -qx docker; then
-  fail "$DEPLOY_USER is in the docker group — that is root without sudo. Remove it: gpasswd -d $DEPLOY_USER docker"
+# Checked by capability, not by group name: any group that can write the socket is root without sudo.
+SOCKET=/var/run/docker.sock
+if [ -S "$SOCKET" ] && runuser -u "$DEPLOY_USER" -- test -w "$SOCKET"; then
+  fail "$DEPLOY_USER can write $SOCKET — that is root without sudo. Remove it from the socket's group ($(stat -c %G "$SOCKET"))"
 fi
-ok "not in the docker group"
+ok "cannot use Docker directly"
 
 step "Deploy command $COMMAND"
 /usr/bin/python3 -I -B -c '

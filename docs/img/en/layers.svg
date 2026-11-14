@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 410" width="900" height="410" role="img" aria-label="A leaked key can only trigger a deploy">
+<title>A leaked key can only trigger a deploy</title>
+<style>
+  :root, svg {
+    --bg: #ffffff; --ink: #1f2328; --muted: #59636e; --node: #f6f8fa; --edge: #d1d9e0;
+    --accent: #0969da; --accent-soft: #ddf4ff; --ok: #1a7f37; --ok-soft: #dafbe1;
+    --bad: #cf222e; --bad-soft: #ffebe9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root, svg {
+      --bg: #0d1117; --ink: #e6edf3; --muted: #9198a1; --node: #151b23; --edge: #3d444d;
+      --accent: #4493f8; --accent-soft: #0c2d6b; --ok: #3fb950; --ok-soft: #0f3a1e;
+      --bad: #f85149; --bad-soft: #4c1414;
+    }
+  }
+  text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif; fill: var(--ink); }
+  .bg { fill: var(--bg); }
+  .title { font-size: 20px; font-weight: 600; }
+  .caption { font-size: 13px; fill: var(--muted); }
+  .label { font-size: 14px; font-weight: 600; }
+  .sub { font-size: 11.5px; fill: var(--muted); }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .edge { stroke: var(--edge); stroke-width: 2; fill: none; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+@keyframes l0 { 0%, 6.00% { fill: var(--node); stroke: var(--edge); } 9.00%, 90% { fill: var(--accent-soft); stroke: var(--accent); } 97%, 100% { fill: var(--node); stroke: var(--edge); } }
+.l0 { animation: l0 10s infinite; }
+@keyframes a0 { 0%, 8.00% { opacity: 0; transform: translateX(40px); } 12.00%, 90% { opacity: 1; transform: none; } 97%, 100% { opacity: 0; } }
+.a0 { animation: a0 10s ease-out infinite; }
+@keyframes l1 { 0%, 20.00% { fill: var(--node); stroke: var(--edge); } 23.00%, 90% { fill: var(--accent-soft); stroke: var(--accent); } 97%, 100% { fill: var(--node); stroke: var(--edge); } }
+.l1 { animation: l1 10s infinite; }
+@keyframes a1 { 0%, 22.00% { opacity: 0; transform: translateX(40px); } 26.00%, 90% { opacity: 1; transform: none; } 97%, 100% { opacity: 0; } }
+.a1 { animation: a1 10s ease-out infinite; }
+@keyframes l2 { 0%, 34.00% { fill: var(--node); stroke: var(--edge); } 37.00%, 90% { fill: var(--accent-soft); stroke: var(--accent); } 97%, 100% { fill: var(--node); stroke: var(--edge); } }
+.l2 { animation: l2 10s infinite; }
+@keyframes a2 { 0%, 36.00% { opacity: 0; transform: translateX(40px); } 40.00%, 90% { opacity: 1; transform: none; } 97%, 100% { opacity: 0; } }
+.a2 { animation: a2 10s ease-out infinite; }
+@keyframes l3 { 0%, 48.00% { fill: var(--node); stroke: var(--edge); } 51.00%, 90% { fill: var(--accent-soft); stroke: var(--accent); } 97%, 100% { fill: var(--node); stroke: var(--edge); } }
+.l3 { animation: l3 10s infinite; }
+@keyframes a3 { 0%, 50.00% { opacity: 0; transform: translateX(40px); } 54.00%, 90% { opacity: 1; transform: none; } 97%, 100% { opacity: 0; } }
+.a3 { animation: a3 10s ease-out infinite; }
+@keyframes l4 { 0%, 62.00% { fill: var(--node); stroke: var(--edge); } 65.00%, 90% { fill: var(--accent-soft); stroke: var(--accent); } 97%, 100% { fill: var(--node); stroke: var(--edge); } }
+.l4 { animation: l4 10s infinite; }
+@keyframes a4 { 0%, 64.00% { opacity: 0; transform: translateX(40px); } 68.00%, 90% { opacity: 1; transform: none; } 97%, 100% { opacity: 0; } }
+.a4 { animation: a4 10s ease-out infinite; }
+</style>
+<rect class="bg" width="900" height="410" rx="16"/>
+<text class="title" x="450.0" y="44" text-anchor="middle">A leaked key can only trigger a deploy</text>
+<rect class="l0" x="30" y="80" width="560" height="42" rx="10" stroke-width="2"/>
+<text class="label" x="48" y="98">🔒 GitHub environment</text>
+<text class="sub mono" x="48" y="114">secrets only for the deploy branch</text>
+<g class="a0"><rect x="630" y="84" width="240" height="34" rx="8" fill="var(--bad-soft)" stroke="var(--bad)"/><text class="label" x="646" y="106" style="fill: var(--bad)">✗ other branch</text><text class="sub" x="856" y="106" text-anchor="end">blocked</text></g>
+<rect class="l1" x="44" y="132" width="546" height="42" rx="10" stroke-width="2"/>
+<text class="label" x="62" y="150">🔒 authorized_keys</text>
+<text class="sub mono" x="62" y="166">restrict, command=&quot;sudo -n deproi-&lt;name&gt;&quot;</text>
+<g class="a1"><rect x="630" y="136" width="240" height="34" rx="8" fill="var(--bad-soft)" stroke="var(--bad)"/><text class="label" x="646" y="158" style="fill: var(--bad)">✗ open a shell</text><text class="sub" x="856" y="158" text-anchor="end">blocked</text></g>
+<rect class="l2" x="58" y="184" width="532" height="42" rx="10" stroke-width="2"/>
+<text class="label" x="76" y="202">🔒 sudo rule</text>
+<text class="sub mono" x="76" y="218">one command, no arguments (&quot;&quot;)</text>
+<g class="a2"><rect x="630" y="188" width="240" height="34" rx="8" fill="var(--bad-soft)" stroke="var(--bad)"/><text class="label" x="646" y="210" style="fill: var(--bad)">✗ pass arguments</text><text class="sub" x="856" y="210" text-anchor="end">blocked</text></g>
+<rect class="l3" x="72" y="236" width="518" height="42" rx="10" stroke-width="2"/>
+<text class="label" x="90" y="254">🔒 deproi-&lt;name&gt;</text>
+<text class="sub mono" x="90" y="270">root-owned, outside the checkout</text>
+<g class="a3"><rect x="630" y="240" width="240" height="34" rx="8" fill="var(--bad-soft)" stroke="var(--bad)"/><text class="label" x="646" y="262" style="fill: var(--bad)">✗ edit the script</text><text class="sub" x="856" y="262" text-anchor="end">blocked</text></g>
+<rect class="l4" x="86" y="288" width="504" height="42" rx="10" stroke-width="2"/>
+<text class="label" x="104" y="306">🔒 /etc/deproi/&lt;name&gt;.json</text>
+<text class="sub mono" x="104" y="322">root decides branch, project, paths</text>
+<g class="a4"><rect x="630" y="292" width="240" height="34" rx="8" fill="var(--bad-soft)" stroke="var(--bad)"/><text class="label" x="646" y="314" style="fill: var(--bad)">✗ change the target</text><text class="sub" x="856" y="314" text-anchor="end">blocked</text></g>
+<text class="caption" x="450.0" y="384" text-anchor="middle">Each layer holds on its own. Together, the deploy key is good for exactly one thing.</text>
+</svg>

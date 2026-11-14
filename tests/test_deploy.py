@@ -22,7 +22,7 @@ class TestHappyPath:
             f"result: SUCCESS commit={COMMIT} previous={PREVIOUS} duration=0s protected=- step=cleanup "
             "script=up_to_date"
         )
-        assert run.message == f"myapp-prod published: commit {COMMIT} is live at https://app.example.com (1 min)."
+        assert run.message == f"myapp-prod published: commit {COMMIT} is live at https://app.example.com (0 s)."
         assert "::error::" not in run.out
 
     def test_banner_and_steps_are_grouped(self, run):
@@ -151,7 +151,7 @@ class TestHappyPath:
 
     def test_without_url(self, run):
         run(overrides={"url": None})
-        assert run.message == f"myapp-prod published: commit {COMMIT} is live (1 min)."
+        assert run.message == f"myapp-prod published: commit {COMMIT} is live (0 s)."
 
     def test_without_env_file_there_is_no_project_check(self, run):
         run(overrides={"compose": {"env_file": None}})

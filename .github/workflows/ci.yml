@@ -94,3 +94,22 @@ jobs:
           mapfile -t scripts < <(git ls-files '*.sh')
           if [ "${#scripts[@]}" -eq 0 ]; then echo "no shell scripts yet"; exit 0; fi
           shellcheck "${scripts[@]}"
+
+  e2e:
+    name: End-to-end (SSH into a server container)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: tests/e2e/run.sh
+
+  images:
+    name: Docs images up to date
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: python3 tools/build_images.py --check

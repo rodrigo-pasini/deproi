@@ -32,7 +32,8 @@ EXEMPT_FILES = {
     "PLANO.md",  # internal planning notes (pt-BR only), removed before v1.0
 }
 # .github holds GitHub-specific files (templates) that GitHub reads from a single path: bilingual inline.
-EXEMPT_DIRS = {".git", ".github", ".venv", "venv", "node_modules", ".pytest_cache", ".ruff_cache", "fixtures"}
+# skills/ holds agent skill files, read by tools in one language.
+EXEMPT_DIRS = {".git", ".github", "skills", ".venv", "venv", "node_modules", ".pytest_cache", ".ruff_cache", "fixtures"}
 
 _HEADING = re.compile(r"^(#{1,6})\s+\S")
 _FENCE = re.compile(r"^\s*(```+|~~~+)\s*([\w+-]*)")

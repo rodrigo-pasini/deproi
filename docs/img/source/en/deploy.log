@@ -1,0 +1,122 @@
+Deproi 0.1.0 — deproi-example-prod
+::group::Lock
+(Lock: 0 s)
+::endgroup::
+::group::Disk space
+Free space for Docker: 24.2 GB
+(Disk space: 0 s)
+::endgroup::
+::group::Update the code
+From /srv/origin
+ * branch            main       -> FETCH_HEAD
+   91a22fc..4664205  main       -> origin/main
+Updating 91a22fc..4664205
+Fast-forward
+ app/server.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+Commit to publish: 46642052eea9
+(Update the code: 0 s)
+::endgroup::
+::group::Deploy script
+Deploy script up to date (ed99e76e7fd0, version 0.1.0).
+(Deploy script: 0 s)
+::endgroup::
+::group::Compose definition
+Services: web-prod, worker-prod
+(Compose definition: 0 s)
+::endgroup::
+::group::Build the image deproi-example:46642052eea9
+time="2026-11-14T18:23:39Z" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
+#0 building with "default" instance using docker driver
+
+#1 [web-prod internal] load build definition from Dockerfile
+#1 transferring dockerfile: 533B done
+#1 DONE 0.0s
+
+#2 [web-prod internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.2s
+
+#3 [web-prod internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [web-prod 1/4] FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+#4 DONE 0.0s
+
+#5 [web-prod internal] load build context
+#5 transferring context: 1.53kB done
+#5 DONE 0.0s
+
+#6 [web-prod 2/4] WORKDIR /app
+#6 CACHED
+
+#7 [web-prod 3/4] COPY app/ /app/
+#7 CACHED
+
+#8 [web-prod 4/4] RUN mkdir /data && chown nobody /data
+#8 CACHED
+
+#9 [web-prod] exporting to image
+#9 exporting layers done
+#9 writing image sha256:65b8a8c3f717ad2d1fff275b56a6add2729e9d8fcfc632f17305b3b4d9219157 done
+#9 naming to docker.io/library/deproi-example:46642052eea9 done
+#9 DONE 0.0s
+
+#10 [web-prod] resolving provenance for metadata file
+#10 DONE 0.0s
+time="2026-11-14T18:23:39Z" level=warning msg="current commit information was not captured by the build" error="failed to read current commit information with git rev-parse --is-inside-work-tree"
+ web-prod  Built
+(Build the image deproi-example:46642052eea9: 0 s)
+::endgroup::
+::group::Health check of web-prod
+Health check found (Dockerfile HEALTHCHECK).
+(Health check of web-prod: 0 s)
+::endgroup::
+::group::Hooks: pre_migrate
+No hooks configured.
+(Hooks: pre_migrate: 0 s)
+::endgroup::
+::group::Hooks: migrate
+Hook schema: python migrate.py
+schema at version 3
+(Hooks: migrate: 0 s)
+::endgroup::
+::group::Hooks: post_migrate
+No hooks configured.
+(Hooks: post_migrate: 0 s)
+::endgroup::
+::group::Protected services
+worker-prod is idle: it joins the recreation.
+(Protected services: 0 s)
+::endgroup::
+::group::Recreate the services
+Image in use before the deploy: 91a22fc76782
+ Container deproi-example-prod-web-prod-1  Recreate
+ Container deproi-example-prod-web-prod-1  Recreated
+ Container deproi-example-prod-web-prod-1  Starting
+ Container deproi-example-prod-web-prod-1  Started
+ Container deproi-example-prod-worker-prod-1  Recreate
+ Container deproi-example-prod-worker-prod-1  Recreated
+ Container deproi-example-prod-worker-prod-1  Starting
+ Container deproi-example-prod-worker-prod-1  Started
+(Recreate the services: 1 s)
+::endgroup::
+::group::Wait for web-prod to be healthy
+health of web-prod: starting
+health of web-prod: healthy
+(Wait for web-prod to be healthy: 2 s)
+::endgroup::
+::group::Clean up old images
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Total reclaimed space: 0B
+(Clean up old images: 0 s)
+::endgroup::
+betterstack: off on this server
+cloudflare: purge off
+webhook: off
+post_deploy: No hooks configured.
+message: deproi-example-prod published: commit 46642052eea9 is live at http://127.0.0.1:8080 (6 s).
+result: SUCCESS commit=46642052eea9 previous=91a22fc76782 duration=6s protected=worker-prod:updated step=cleanup script=up_to_date

@@ -17,3 +17,12 @@ Todas as mudanças relevantes do Deproi ficam registradas aqui. O formato segue 
 - Templates de workflow: o workflow de deploy (sem lógica, segredos no GitHub environment, interruptor de pausa, resumo) e o `deproi-update.yml` opcional, que abre um pull request para novas versões do Deproi depois de conferir o SHA256SUMS.
 - Workflow de release que publica o `deproi.py` e o `SHA256SUMS`.
 - Suíte de testes (210 testes, Python 3.10 e 3.12) e testes de paridade com o deployer de origem (rodam localmente).
+- Projeto de exemplo (`example/`) e um teste de ponta a ponta (`tests/e2e/run.sh`) que o implanta por SSH num contêiner servidor: sucesso, commit novo, chave presa, reversão, serviço protegido ocupado, autoatualização, recusas; roda na CI.
+- Documentação em inglês e português do Brasil: README com diagramas animados (fluxo, reversão, camadas de segurança, um log real de deploy), como funciona, instalação, contrato do projeto, configuração, receitas, integrações, operação, segurança.
+- `AGENTS.md`: o guia para agentes de IA implantarem, atualizarem ou investigarem o Deproi num projeto; uma skill do Claude Code que aponta para ele.
+
+### Corrigido
+
+- Um serviço protegido que ainda não tem contêiner (primeiro deploy) é criado, em vez de ser tratado como parado.
+- `prepare-server.sh` e `doctor.sh` detectam um usuário `deproi` que consegue escrever no socket do Docker por qualquer grupo, não só um chamado `docker`.
+- A URL de um webhook nunca aparece em linhas de erro (só o host).

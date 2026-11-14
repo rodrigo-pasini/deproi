@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/rodrigo-pasini/deproi/main/deproi.schema.json",
+  "name": "deproi-example-prod",
+  "language": "en",
+  "checkout": { "path": "/srv/deproi-example-prod", "owner": "app", "branch": "main" },
+  "compose": {
+    "project": "deproi-example-prod",
+    "env_file": "deploy/prod.compose.env",
+    "profiles": ["prod"],
+    "service_suffix": "-prod",
+    "web_service": "web-prod",
+    "image": "deproi-example"
+  },
+  "url": "http://127.0.0.1:8080",
+  "timeouts": { "health": 40 },
+  "health_interval": 2,
+  "min_free_disk_gb": 1,
+  "hooks": {
+    "migrate": [{ "name": "schema", "command": ["python", "migrate.py"] }]
+  },
+  "protected_services": [
+    { "service": "worker-prod", "busy_check": ["python", "worker.py", "--busy"] }
+  ]
+}
