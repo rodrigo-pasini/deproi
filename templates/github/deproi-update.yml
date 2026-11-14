@@ -59,7 +59,7 @@ jobs:
           base="https://github.com/$UPSTREAM/releases/download"
           curl -fsSL "$base/v$LATEST/deproi.py" -o "$work/deproi.py"
           curl -fsSL "$base/v$LATEST/SHA256SUMS" -o "$work/SHA256SUMS"
-          (cd "$work" && sha256sum --check --strict SHA256SUMS)
+          (cd "$work" && sha256sum --check --strict --ignore-missing SHA256SUMS)
           grep -qx "DEPROI_VERSION = \"$LATEST\"" "$work/deproi.py"
           # Was the local copy edited? Compare with the published hash of the current version.
           modified=unknown

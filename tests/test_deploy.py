@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import pytest
-from conftest import COMMIT, GB, PREVIOUS, WEB_ID, FakeExecutor, definition
+from conftest import COMMIT, GB, PREVIOUS, WEB_ID, FakeExecutor, definition, recreates
 
 import deproi
 
@@ -96,10 +96,10 @@ class TestHappyPath:
 
     def test_whole_profile_is_recreated_without_a_list(self, run):
         run()
-        up = run.executor.commands(" up ")
+        up = recreates(run.executor)
         assert len(up) == 1
         assert up[0][-3:] == ["up", "-d", "--remove-orphans"]
-        assert run.executor.call(" up ").env == {"DEPROI_TAG": COMMIT}
+        assert next(c for c in run.executor.calls if "--remove-orphans" in c.command).env == {"DEPROI_TAG": COMMIT}
 
     def test_removed_containers_are_reported(self, run):
         run(FakeExecutor({" up ": R(0, " Container myapp-prod-old-1  Removed\n")}))
@@ -281,7 +281,7 @@ class TestBuildAndHealthcheck:
         run(FakeExecutor({" build": R(1, "")}))
         assert run.code == 3
         assert f"The image of commit {COMMIT} did not build" in run.message
-        assert not run.executor.commands(" up ")
+        assert not recreates(run.executor)
 
     def test_healthcheck_is_required(self, run):
         run(
@@ -294,7 +294,7 @@ class TestBuildAndHealthcheck:
         )
         assert run.code == 2
         assert "has no health check" in run.message
-        assert not run.executor.commands(" up ")
+        assert not recreates(run.executor)
 
     def test_healthcheck_from_the_dockerfile(self, run):
         run(
@@ -340,7 +340,8 @@ class TestHooks:
         ]
         assert run.executor.call("manage.py migrate").env == {"DEPROI_TAG": COMMIT}
         texts = " ".join(c[-1] if c[0] == "logger" else " ".join(c) for c in run.executor.commands())
-        assert texts.index("manage.py migrate") < texts.index(" up -d")
+        assert texts.index("manage.py migrate") < texts.index("--remove-orphans")
+        assert texts.index("--no-recreate --wait redis-prod") < texts.index("check --deploy")
 
     def test_no_hooks(self, run):
         run()
@@ -364,7 +365,7 @@ class TestHooks:
         run(FakeExecutor({"manage.py migrate": R(1, "")}), overrides={"hooks": HOOKS})
         assert run.code == 3
         assert "Migrations applied before the failure stay applied" in run.message
-        assert not run.executor.commands(" up ")
+        assert not recreates(run.executor)
 
     def test_post_migrate_failure_only_warns(self, run):
         run(FakeExecutor({"sync_flags": R(1, "")}), overrides={"hooks": HOOKS})
@@ -397,14 +398,14 @@ class TestHooks:
 
 class TestRollback:
     def test_unhealthy_version_rolls_back_with_the_previous_definition(self, run):
-        run(FakeExecutor(first={"{{.State.Health.Status}}": [R(0, "unhealthy\n")] * 49 + [R(0, "healthy\n")]}))
+        run(FakeExecutor(first={"{{.State.Health.Status}}": [R(0, "unhealthy\n")] * 3 + [R(0, "healthy\n")]}))
         assert run.code == 4
         assert run.message == (
             f"Version {COMMIT} did not become healthy — the environment went back to {PREVIOUS}. "
             "Applied migrations were not undone."
         )
         ups = run.executor.calls
-        ups = [c for c in ups if " up " in " ".join(c.command)]
+        ups = [c for c in ups if " up " in " ".join(c.command) and "--no-recreate" not in c.command]
         assert len(ups) == 2
         back = ups[1]
         assert back.env == {"DEPROI_TAG": PREVIOUS}
@@ -415,9 +416,29 @@ class TestRollback:
         assert not run.background
         assert run.result.split()[1] == "FAILED_ROLLED_BACK"
 
-    def test_health_waits_until_the_deadline(self, run):
-        run(FakeExecutor(failing_health()))
-        assert run.clock.sleeps.count(5) >= 48
+    def test_health_waits_until_the_deadline_while_starting(self, run):
+        run(FakeExecutor({"{{.State.Health.Status}}": R(0, "starting\n")}))
+        assert run.clock.sleeps.count(5) >= 96  # the new version, then the rollback
+        assert run.code == 5
+
+    def test_unhealthy_three_times_in_a_row_stops_waiting(self, run):
+        run(
+            FakeExecutor(
+                first={
+                    "{{.State.Health.Status}}": [R(0, "starting\n")] * 2
+                    + [R(0, "unhealthy\n")] * 3
+                    + [R(0, "healthy\n")]
+                }
+            )
+        )
+        assert run.code == 4
+        assert "web-prod reported unhealthy 3 times in a row" in run.out
+        assert run.clock.sleeps == [5, 5, 5, 5]
+
+    def test_unhealthy_streak_is_reset_by_another_status(self, run):
+        statuses = [R(0, "unhealthy\n"), R(0, "unhealthy\n"), R(0, "starting\n"), R(0, "healthy\n")]
+        run(FakeExecutor(first={"{{.State.Health.Status}}": statuses}))
+        assert run.code == 0
 
     def test_rollback_that_also_fails(self, run):
         run(FakeExecutor(failing_health()))
@@ -434,7 +455,7 @@ class TestRollback:
         assert "there is no previous version" in run.message
 
     def test_failed_recreate_rolls_back(self, run):
-        run(FakeExecutor(first={" up ": [R(1, "port is already allocated"), R(0, "")]}))
+        run(FakeExecutor(first={"--remove-orphans": [R(1, "port is already allocated"), R(0, "")]}))
         assert run.code == 4
 
     def test_previous_definition_missing_uses_the_current_one(self, run):
@@ -442,7 +463,7 @@ class TestRollback:
             FakeExecutor(
                 first={
                     f"show {PREVIOUS}:compose.yaml": R(128, "fatal: invalid object"),
-                    "{{.State.Health.Status}}": [R(0, "unhealthy\n")] * 49 + [R(0, "healthy\n")],
+                    "{{.State.Health.Status}}": [R(0, "unhealthy\n")] * 3 + [R(0, "healthy\n")],
                 }
             )
         )
@@ -454,19 +475,49 @@ class TestRollback:
             FakeExecutor(
                 first={
                     f"show {PREVIOUS}:deploy/prod.compose.env": R(0, "COMPOSE_PROJECT_NAME=other\n"),
-                    "{{.State.Health.Status}}": [R(0, "unhealthy\n")] * 49 + [R(0, "healthy\n")],
+                    "{{.State.Health.Status}}": [R(0, "unhealthy\n")] * 3 + [R(0, "healthy\n")],
                 }
             )
         )
         assert "the rollback uses the current one" in run.out
 
 
+class TestDependencies:
+    def test_third_party_services_are_started_before_the_hooks(self, run):
+        run(overrides={"hooks": HOOKS})
+        deps = run.executor.call("--no-recreate")
+        assert deps.command[deps.command.index("up") :] == ["up", "-d", "--no-recreate", "--wait", "redis-prod"]
+        assert deps.env == {"DEPROI_TAG": COMMIT}
+        assert "Running: redis-prod." in run.out
+
+    def test_failure_stops_before_any_hook(self, run):
+        run(FakeExecutor({"--no-recreate": R(1, "dependency failed to start")}), overrides={"hooks": HOOKS})
+        assert run.code == 3
+        assert "Third-party services did not start (redis-prod)" in run.message
+        assert not run.executor.commands("check --deploy")
+        assert not recreates(run.executor)
+
+    def test_no_third_party_services(self, run):
+        own_only = definition(extra={}).replace(', "redis-prod": {"image": "redis:7"}', "")
+        run(FakeExecutor({"config --format json": R(0, own_only)}))
+        assert "No third-party services." in run.out
+        assert not run.executor.commands("--no-recreate")
+
+
 class TestRepublish:
-    def test_same_commit_is_force_recreated(self, run):
+    def test_same_commit_force_recreates_only_the_projects_own_services(self, run):
         run(FakeExecutor({"{{.Config.Image}}": R(0, f"myapp:{COMMIT}\n")}))
         assert run.code == 0
-        assert "--force-recreate" in run.executor.commands(" up ")[0]
+        first, forced = recreates(run.executor)
+        assert "--force-recreate" not in first and first[-1] == "--remove-orphans"
+        assert forced[forced.index("up") :] == ["up", "-d", "--force-recreate", "--no-deps", "web-prod", "worker-prod"]
+        assert "redis-prod" not in forced
         assert "Same commit already live" in run.out
+
+    def test_a_new_commit_is_not_force_recreated(self, run):
+        run()
+        assert len(recreates(run.executor)) == 1
+        assert "--force-recreate" not in recreates(run.executor)[0]
 
     def test_same_commit_unhealthy_cannot_roll_back(self, run):
         run(FakeExecutor({**failing_health(), "{{.Config.Image}}": R(0, f"myapp:{COMMIT}\n")}))

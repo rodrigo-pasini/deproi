@@ -49,7 +49,7 @@ Leia este arquivo inteiro antes de fazer qualquer coisa. Ele foi escrito para vo
 
 Faça estas verificações e anote as respostas. Não mude nada ainda.
 
-1. **Compose:** existe um `compose.yaml` / `docker-compose.yml`? Quais serviços? Qual deles serve HTTP (o serviço web)?
+1. **Compose:** existe um `compose.yaml` / `docker-compose.yml`? Quais serviços? Qual deles serve HTTP (o serviço web)? Se o arquivo não for `compose.yaml`, a configuração precisa de `compose.files`.
 2. **Dockerfile:** o serviço web é construído a partir de um? A imagem tem `curl`/`wget` ou um runtime da linguagem para rodar uma sonda de saúde?
 3. **Healthcheck:** existe um `HEALTHCHECK` ou `healthcheck:`? Existe um endpoint que falha quando a aplicação está quebrada? Se não, você vai adicionar um.
 4. **Tags de imagem:** os serviços construídos definem `image:`? Você vai definir `image: <name>:${DEPROI_TAG:-local}`.
@@ -59,8 +59,9 @@ Faça estas verificações e anote as respostas. Não mude nada ainda.
    **Ensaie** se houver Docker disponível: commite na sua branch e rode
    `/tmp/deproi/scripts/try-locally.sh --project . --config myapp-prod.json --ref <sua branch>` (adicione `--secrets <arquivo>` com valores fictícios se o compose precisar). Tem que terminar com "Rehearsal passed". Coloque o resultado na descrição do pull request.
 8. **Segredos:** quais variáveis são secretas? Elas vão para `/etc/deproi/<name>.secrets.env` e são referenciadas como `${VAR}` no compose.
-9. **Deploy atual:** como o projeto faz deploy hoje? Algo que o Deproi precisa continuar fazendo (arquivos estáticos, purga de cache, notificações)? Mapeie cada item para um gancho ou integração.
-10. **Valide localmente:** `docker compose --env-file deploy/<env>.compose.env --profile <env> config` precisa funcionar depois das suas mudanças.
+9. **Deploy atual:** como o projeto faz deploy hoje? Algo que o Deproi precisa continuar fazendo (arquivos estáticos, purga de cache, notificações)? Mapeie cada item para um gancho ou integração. Se ele já roda no servidor, planeje a migração com o humano ([migrar de um deploy existente](docs/installation.pt-BR.md#migrar-de-um-deploy-existente)): um `COMPOSE_PROJECT_NAME` novo significa **volumes novos e vazios** — nunca deixe o primeiro deploy começar num banco de dados vazio por acidente.
+10. **Servidor compartilhado:** cada ambiente precisa das suas próprias portas publicadas e do seu próprio `compose.image`, além do perfil e do sufixo.
+11. **Valide localmente:** `docker compose --env-file deploy/<env>.compose.env --profile <env> config` precisa funcionar depois das suas mudanças.
 
 Se o projeto nem roda em Docker Compose, pare e avise o humano: conteinerizá-lo é uma tarefa separada, a ser feita e revisada antes.
 
@@ -90,10 +91,10 @@ Trabalhe numa branch, nunca numa branch de deploy.
 1. **Baixe uma release fixada do Deproi** numa pasta temporária e verifique-a:
 
    ```bash
-   DEPROI_VERSION=0.1.0
+   DEPROI_VERSION=0.2.0
    git clone --quiet --depth 1 --branch "v$DEPROI_VERSION" https://github.com/rodrigo-pasini/deproi /tmp/deproi
    curl -fsSL "https://github.com/rodrigo-pasini/deproi/releases/download/v$DEPROI_VERSION/SHA256SUMS" -o /tmp/deproi/SHA256SUMS
-   (cd /tmp/deproi && sha256sum --check --ignore-missing SHA256SUMS)
+   (cd /tmp/deproi && sha256sum --check --ignore-missing SHA256SUMS && cd scripts && sha256sum --check --ignore-missing ../SHA256SUMS)
    ```
 
    Use a release mais recente listada em <https://github.com/rodrigo-pasini/deproi/releases>, não necessariamente o número acima.
@@ -108,7 +109,7 @@ Trabalhe numa branch, nunca numa branch de deploy.
    /tmp/deproi/scripts/render-workflow.sh update > .github/workflows/deproi-update.yml   # recomendado
    ```
 
-   O `--name` é `<app>-<env>`, em minúsculas, e precisa ser idêntico no servidor. Não edite os arquivos renderizados.
+   O `--name` é `<app>-<env>`, em minúsculas, e precisa ser idêntico no servidor. Não edite os arquivos renderizados. Cada workflow de deploy precisa acabar na branch que ele implanta (um push só roda os workflows da branch enviada).
 5. **Rascunhe a configuração do servidor** de cada ambiente a partir de `/tmp/deproi/templates/server/deproi.example.json` e da [referência da configuração](docs/configuration.pt-BR.md). Mantenha-a fora do caminho de deploy do repositório: coloque-a na sua mensagem de entrega (ou em `docs/deploy/<name>.json.example` sem segredos, se o humano preferir versioná-la). Valide-a:
 
    ```bash
@@ -122,18 +123,27 @@ Trabalhe numa branch, nunca numa branch de deploy.
 
 ### 6. Entregue ao humano
 
-Mande isto, preenchido, depois que o pull request estiver aberto. Substitua cada `<…>`. Um bloco por ambiente.
+Mande isto, preenchido, depois que o pull request estiver aberto. Substitua cada `<…>`. Um bloco por ambiente. A ordem importa: o servidor é preparado a partir da branch de deploy, então o merge do pull request vem primeiro, com os deploys pausados.
 
 ````markdown
 ## Configuração do Deproi para <name> — o que você precisa rodar
 
-O pull request <link> adiciona o workflow e prepara o projeto. Antes de fazer o merge:
+O pull request <link> prepara o projeto (script do Deproi, workflow, mudanças no compose). Siga os passos nesta ordem.
 
-### 🖥️ No servidor (<host>), como um usuário com sudo
+### 1. 🐙 Pause os deploys e depois faça o merge
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/rodrigo-pasini/deproi/v<version>/scripts/prepare-server.sh
-curl -fsSLO https://raw.githubusercontent.com/rodrigo-pasini/deproi/v<version>/scripts/doctor.sh
-chmod +x prepare-server.sh doctor.sh
+gh api -X PUT repos/<owner/repo>/environments/<github env> --silent
+gh variable set DEPROI_PAUSED --repo <owner/repo> --env <github env> --body true
+```
+Depois faça o merge do pull request na <branch>. O workflow só escreve "paused".
+
+### 2. 🖥️ No servidor (<host>), como um usuário com sudo
+```bash
+sudo install -d -o <owner> -g <owner> <checkout path>
+sudo -u <owner> git clone -b <branch> <git URL> <checkout path>
+V=<version>; B=https://github.com/rodrigo-pasini/deproi/releases/download/v$V
+curl -fsSLO "$B/prepare-server.sh" -fsSLO "$B/doctor.sh" -fsSLO "$B/SHA256SUMS"
+sha256sum --check --ignore-missing SHA256SUMS && chmod +x prepare-server.sh doctor.sh
 sudo ./prepare-server.sh --name <name> --checkout <checkout path>
 sudo nano /etc/deproi/<name>.json            # cole a configuração abaixo
 sudo install -m 0600 /dev/null /etc/deproi/<name>.secrets.env && sudo nano /etc/deproi/<name>.secrets.env
@@ -144,20 +154,26 @@ sudo /usr/local/sbin/deproi-<name>           # primeiro deploy à mão: precisa 
 <the JSON config>
 
 Segredos a colocar no arquivo de segredos: <VAR1>, <VAR2> (valores do seu gerenciador de senhas).
+<Se o projeto já roda neste servidor: o plano para dados/portas/credenciais, passo a passo, ANTES do primeiro deploy.>
 
-### 💻 Na sua máquina
+### 3. 💻 Na sua máquina
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/rodrigo-pasini/deproi/v<version>/scripts/create-deploy-key.sh
-chmod +x create-deploy-key.sh
-./create-deploy-key.sh --name <name> --host <host> --repo <owner/repo> --environment <github env> --branch <branch>
+V=<version>; B=https://github.com/rodrigo-pasini/deproi/releases/download/v$V
+curl -fsSLO "$B/create-deploy-key.sh" -fsSLO "$B/SHA256SUMS"
+sha256sum --check --ignore-missing SHA256SUMS && chmod +x create-deploy-key.sh
+./create-deploy-key.sh --name <name> --host <host> --port <ssh port> --repo <owner/repo> --environment <github env> --branch <branch>
 ```
-Ele vai pedir que você rode mais um comando no servidor e que compare a impressão digital do servidor.
+Ele mostra um comando `prepare-server.sh … --public-key …`: rode-o no servidor, na pasta do passo 2, com `--checkout <checkout path>`. Ele também pede que você compare a impressão digital do servidor.
 
-### 🐙 No GitHub
-1. Faça o merge do pull request na <branch>. O primeiro deploy automático começa.
-2. Actions → "Deploy <github env>": o resumo precisa mostrar `result: SUCCESS`.
-3. Recomendado para produção: Settings → Environments → <github env> → Required reviewers.
-4. Settings → Actions → General → permita que o GitHub Actions crie pull requests (para o deproi-update.yml).
+### 4. 🐙 Retome e acompanhe
+```bash
+gh variable delete DEPROI_PAUSED --repo <owner/repo> --env <github env>
+gh workflow run <workflow file> --repo <owner/repo> --ref <branch>
+```
+1. Actions → "Deploy <github env>": o resumo precisa mostrar `result: SUCCESS`.
+2. Recomendado para produção: Settings → Environments → <github env> → Required reviewers.
+3. Settings → Actions → General → permita que o GitHub Actions crie pull requests (para o deproi-update.yml).
+4. Remova as credenciais do deploy antigo, se houver: <list>.
 
 Mande para mim a saída do doctor.sh e a linha de resultado se algo não for SUCCESS.
 ````
@@ -184,6 +200,11 @@ Peça evidências em vez de supor que funcionou:
 | Editar o workflow renderizado "para adicionar um passo" | Quebra a R1 | Ganchos no servidor, integrações na configuração |
 | Testar com push na branch de deploy | Um deploy de produção sem revisão | Pull request, depois merge |
 | Esquecer o primeiro deploy manual | A primeira execução automática depura o servidor pelos logs do GitHub | `sudo /usr/local/sbin/deproi-<name>` antes |
+| Passos no servidor "antes do merge" | O `prepare-server.sh` não encontra o `deploy/deproi.py` na branch de deploy | Pause (`DEPROI_PAUSED`), faça o merge e depois prepare o servidor |
+| `COMPOSE_PROJECT_NAME` novo para um projeto que já roda ali | Volumes novos e vazios: a aplicação sobe com um banco de dados vazio | Copie os volumes antes (guia de instalação, "migrar de um deploy existente") |
+| Porta SSH diferente de 22 não informada | O workflow não consegue se conectar | `create-deploy-key.sh --port <port>` (define `DEPROI_SSH_PORT`) |
+| Mesmas portas ou mesmo nome de imagem para dois ambientes num servidor | Conflito de portas; a limpeza de um ambiente remove a imagem anterior do outro | `WEB_PORT` e `compose.image` por ambiente |
+| Banco de dados sem `healthcheck:` | As migrations podem começar antes de ele aceitar conexões | Healthcheck com `pg_isready` / `mysqladmin ping` |
 
 ## Atualizar o Deproi num projeto
 

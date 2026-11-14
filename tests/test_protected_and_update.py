@@ -8,7 +8,7 @@ import subprocess
 import sys
 
 import pytest
-from conftest import COMMIT, PREVIOUS, ROOT, SCRIPT, WORKER_ID, FakeExecutor
+from conftest import COMMIT, PREVIOUS, ROOT, SCRIPT, WORKER_ID, FakeExecutor, recreates
 
 import deproi
 
@@ -27,7 +27,7 @@ PROTECTED = {
 
 
 def ups(executor):
-    return executor.commands(" up ")
+    return recreates(executor)
 
 
 class TestProtectedServices:
@@ -86,7 +86,7 @@ class TestProtectedServices:
         assert "protected=worker-prod:deferred" in run.result
 
     def test_failed_recreate_resumes_the_quiesced_service(self, run):
-        run(FakeExecutor(first={" up ": [R(1, "boom"), R(0, "")]}), overrides=PROTECTED)
+        run(FakeExecutor(first={"--remove-orphans": [R(1, "boom"), R(0, "")]}), overrides=PROTECTED)
         assert run.executor.commands("worker resume")
 
     def test_without_quiesce(self, run):
@@ -96,14 +96,14 @@ class TestProtectedServices:
         assert "protected=worker-prod:updated" in run.result
 
     def test_rollback_takes_an_idle_protected_service_back(self, run):
-        health = [R(0, "unhealthy\n")] * 49 + [R(0, "healthy\n")]
+        health = [R(0, "unhealthy\n")] * 3 + [R(0, "healthy\n")]
         run(FakeExecutor(first={"{{.State.Health.Status}}": health}), overrides=PROTECTED)
         assert run.code == 4
         assert "protected=worker-prod:rolled_back" in run.result
         assert ups(run.executor)[-1][-1] == "worker-prod"
 
     def test_rollback_leaves_a_busy_protected_service_on_the_new_version(self, run):
-        health = [R(0, "unhealthy\n")] * 49 + [R(0, "healthy\n")]
+        health = [R(0, "unhealthy\n")] * 3 + [R(0, "healthy\n")]
         busy = [R(0, ""), R(0, ""), R(1, "")]  # idle, idle after quiesce, busy at rollback
         run(FakeExecutor(first={"{{.State.Health.Status}}": health, "worker busy": busy}), overrides=PROTECTED)
         assert "stays on the new version" in run.out

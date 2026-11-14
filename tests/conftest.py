@@ -218,6 +218,11 @@ class Run:
         return next(line for line in self.out.splitlines() if line.startswith(prefix))
 
 
+def recreates(executor) -> list:
+    """The ``up`` commands that recreate services (not the dependencies' ``up --no-recreate``)."""
+    return [c for c in executor.commands(" up ") if "--no-recreate" not in c]
+
+
 def no_network(*args, **kwargs):
     raise AssertionError("a test tried to reach the network")
 

@@ -50,6 +50,26 @@ O Laravel 11+ já traz `/up`.
 
 Garanta que a CLI do Prisma esteja na imagem de produção (ou use um serviço `migrate` dedicado, cuja imagem a tenha, com `"service": "migrate-prod"`).
 
+## Node.js com um worker de fila
+
+```json
+"protected_services": [{
+  "service": "worker-prod",
+  "busy_check": ["test", "!", "-e", "/tmp/working"],
+  "quiesce": ["touch", "/tmp/paused"],
+  "resume": ["rm", "-f", "/tmp/paused"]
+}]
+```
+
+O worker escreve `/tmp/working` enquanto processa uma tarefa e para de pegar tarefas novas enquanto `/tmp/paused` existir. Healthcheck sem `curl` no `node:*-slim`:
+
+```yaml
+healthcheck:
+  test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+```
+
+Rode o `node` diretamente (`CMD ["node", "src/server.js"]`) em vez de passar pelo `npm start`, para que o `SIGTERM` chegue ao seu processo.
+
 ## Go, Rust ou qualquer binário
 
 ```json
@@ -96,4 +116,4 @@ O deploy termina em `REFUSED` antes de qualquer migration rodar e antes de qualq
 /usr/local/sbin/deproi-myapp-prod   →  /etc/deproi/myapp-prod.json  →  branch main,    project myapp-prod, suffix -prod
 ```
 
-Dois checkouts, duas configurações, duas chaves, duas regras do sudo, dois workflows. Use nomes diferentes em `compose.image` (`myapp-test`, `myapp`) para que a limpeza de um nunca enxergue as imagens do outro.
+Dois checkouts, duas configurações, duas chaves, duas regras do sudo, dois workflows. Use nomes diferentes em `compose.image` (`myapp-test`, `myapp`) para que a limpeza de um nunca enxergue as imagens do outro, e portas publicadas diferentes (`WEB_PORT=3001` / `3000` em cada arquivo env). Cada arquivo de workflow precisa chegar, por merge, à branch que ele implanta.

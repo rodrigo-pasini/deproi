@@ -7,7 +7,7 @@ Each environment has one file on the server: **`/etc/deproi/<name>.json`**, read
 - **Owner and mode:** `root:root`, not writable by group or others (`0600` recommended). The folder `/etc/deproi` must not be writable by others either. Deproi refuses to run otherwise.
 - **Strict:** an unknown key is an error that names the key (`unknown key compose.profile`). A typo never switches a protection off silently.
 - **Safe defaults:** every optional key has a default. A newer Deproi keeps working with an older file.
-- **Editor support:** keep the `$schema` line and VS Code (and most editors) will autocomplete and validate against [`deproi.schema.json`](../deproi.schema.json).
+- **Editor support:** keep the `$schema` line and VS Code (and most editors) will autocomplete and validate against [`deproi.schema.json`](../deproi.schema.json). It is only read by your editor; pin it to your version's tag if you prefer.
 - **No secrets here.** Tokens and passwords go in separate root-only files (`0600`) that this file points to.
 
 ## A complete example
@@ -96,7 +96,7 @@ All in seconds.
 | `lock` | `1800` | Waiting for another deploy of the same environment to finish. |
 | `build` | `2400` | `docker compose build`. |
 | `migrations` | `2400` | All `migrate` hooks together. |
-| `health` | `240` | Waiting for the web service to become healthy (and again after a rollback). |
+| `health` | `240` | Waiting for the web service to become healthy (and again after a rollback). The wait also ends early when Docker reports `unhealthy` three times in a row. Fast-starting apps can lower it. |
 | `hook` | `600` | Each `pre_migrate` / `post_migrate` hook without its own `timeout`. |
 | `post_deploy` | `300` | Each `post_deploy` hook without its own `timeout`. |
 
@@ -110,6 +110,8 @@ All in seconds.
 ## hooks
 
 A hook is a command that runs **on the new image**, through `docker compose run --rm --no-deps <service> <command…>`, before the services are recreated. The command is a list of arguments, never a shell string.
+
+Third-party services (a database, a cache: anything not running your image) are started first, if they are not running yet, and Deproi waits for them to be healthy. So migrations work on the very first deploy too. Give your database a `healthcheck:` (for Postgres, `pg_isready`) so "started" means "ready".
 
 | Point | When | Default on failure |
 |---|---|---|
@@ -142,6 +144,8 @@ For services that must not be stopped in the middle of their work, such as a que
 | `quiesce` | | Optional: tells it to stop taking new work. `busy_check` runs again right after, so nothing slips in between. |
 | `resume` | | Optional: undoes `quiesce` when the service ends up not recreated. |
 
+`busy_check`, `quiesce` and `resume` are lists of arguments run with `docker exec`, without a shell: use programs that exist in the image (`["test", "!", "-e", "/tmp/working"]`, `["touch", "/tmp/paused"]`, `["node", "busy.js"]`).
+
 What happens to each protected service:
 
 | State | What Deproi does | In the `result:` line |
@@ -150,6 +154,14 @@ What happens to each protected service:
 | Container exists but stopped | Leaves it alone (someone stopped it on purpose) | `stopped` |
 | Busy, or no answer | Keeps it on the previous version; the deploy is `SUCCESS_PROTECTED_DEFERRED` | `deferred` |
 | Idle | Recreates it after the other services | `updated` |
+
+Good to know:
+
+- **Order:** the other services are recreated first, then the idle protected ones. Use `quiesce` (and check again) so no job starts in between.
+- **Rollback:** an idle protected service that was updated goes back with the rest (`rolled_back`); a busy one stays on the new version.
+- **Graceful stop:** handle `SIGTERM` by finishing the current job, and set `stop_grace_period` in compose to the longest job. That also covers the rare race between the busy check and the recreate.
+- **Restart policy:** give it `restart: unless-stopped`. A protected service whose container exists but is stopped is never started by Deproi (someone may have stopped it on purpose), so one that crashed without a restart policy would stay down.
+- **Always busy:** a worker that is never idle never updates. Drain the queue, or run the deploy again from Actions when it is idle.
 
 ## Files next to the config
 

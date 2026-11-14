@@ -46,10 +46,11 @@ Cada passo é um grupo recolhível no log do Actions, com a duração na última
 | 5 | **Definição do Compose** | `docker compose config` do commit novo: todo serviço tem o sufixo do ambiente, o serviço web existe, os serviços construídos têm a tag `<image>:<commit>`. | `REFUSED` — nada foi construído |
 | 6 | **Build** | `docker compose build`, com prioridade baixa, com a tag do commit. | `FAILED_NO_CHANGE` |
 | 7 | **Healthcheck** | O serviço web precisa ter um (`healthcheck:` no compose ou `HEALTHCHECK` no Dockerfile). | `REFUSED` |
-| 8 | **Ganchos** | `pre_migrate` → `migrate` → `post_migrate`, cada um na imagem nova. | por gancho: `fail`, `refuse` ou `warn` |
+| 8 | **Dependências** | Os serviços de terceiros (banco de dados, cache) que ainda não estão rodando são iniciados, e o Deproi espera que fiquem saudáveis. Os que já estão rodando não são tocados. | `FAILED_NO_CHANGE` |
+| 8b | **Ganchos** | `pre_migrate` → `migrate` → `post_migrate`, cada um na imagem nova. | por gancho: `fail`, `refuse` ou `warn` |
 | 9 | **Serviços protegidos** | Workers ocupados ficam na versão deles; os livres podem ser pausados. | — |
-| 10 | **Recriar** | `docker compose up -d --remove-orphans` (`--force-recreate` ao republicar o mesmo commit). Os monitores ganham um período de tolerância, se configurado. | vai para a reversão |
-| 11 | **Saúde** | Espera todo contêiner web ficar `healthy`, até `timeouts.health`. | vai para a reversão |
+| 10 | **Recriar** | `docker compose up -d --remove-orphans`. Ao republicar o mesmo commit, os serviços do próprio projeto são recriados à força (nunca os de terceiros). Os monitores ganham um período de tolerância, se configurado. | vai para a reversão |
+| 11 | **Saúde** | Espera todo contêiner web ficar `healthy`, até `timeouts.health`, ou até o Docker informar `unhealthy` três vezes seguidas. | vai para a reversão |
 | 12 | **Reversão** | Só quando o 10 ou o 11 falhou: a imagem anterior **e a definição do compose anterior** voltam, e a saúde é conferida de novo. | `FAILED_ROLLED_BACK` ou `FAILED_ROLLBACK` |
 | 13 | **Limpeza** | Remove imagens antigas deste ambiente (nunca a atual, a anterior ou uma em uso). | só um aviso |
 | 14 | **Resumo** | `betterstack:`, `cloudflare:`, `webhook:`, `post_deploy:`, depois `message:` e `result:`. O trabalho pós-deploy se desprende e roda em segundo plano. | — |

@@ -47,7 +47,7 @@ Read this whole file before doing anything. It is written for you, an AI coding 
 
 Run these checks and write down the answers. Do not change anything yet.
 
-1. **Compose:** is there a `compose.yaml` / `docker-compose.yml`? Which services? Which one serves HTTP (the web service)?
+1. **Compose:** is there a `compose.yaml` / `docker-compose.yml`? Which services? Which one serves HTTP (the web service)? If the file is not `compose.yaml`, the config needs `compose.files`.
 2. **Dockerfile:** does the web service build from one? Does the image have `curl`/`wget` or a language runtime to run a health probe?
 3. **Health check:** is there a `HEALTHCHECK` or `healthcheck:`? Is there an endpoint that fails when the app is broken? If not, you will add one.
 4. **Image tags:** do built services set `image:`? You will set `image: <name>:${DEPROI_TAG:-local}`.
@@ -55,8 +55,9 @@ Run these checks and write down the answers. Do not change anything yet.
 6. **Migrations:** framework and command (see [recipes](docs/recipes.md)). Are migrations backwards compatible (the previous version must keep working)? Flag risky ones to the human.
 7. **Long-running workers:** queue workers with long jobs? They become protected services with a `busy_check`.
 8. **Secrets:** which variables are secret? They move to `/etc/deproi/<name>.secrets.env` and are referenced as `${VAR}` in compose.
-9. **Current deploy:** how does the project deploy today? Anything Deproi must keep doing (static files, cache purge, notifications)? Map each to a hook or integration.
-10. **Validate locally:** `docker compose --env-file deploy/<env>.compose.env --profile <env> config` must succeed after your changes.
+9. **Current deploy:** how does the project deploy today? Anything Deproi must keep doing (static files, cache purge, notifications)? Map each to a hook or integration. If it already runs on the server, plan the move with the human ([moving from an existing deployment](docs/installation.md#moving-from-an-existing-deployment)): a new `COMPOSE_PROJECT_NAME` means **new, empty volumes** — never let the first deploy start on an empty database by accident.
+10. **Shared server:** each environment needs its own published ports and its own `compose.image`, besides profile and suffix.
+11. **Validate locally:** `docker compose --env-file deploy/<env>.compose.env --profile <env> config` must succeed after your changes.
 
 If the project does not run in Docker Compose at all, stop and tell the human: containerising it is a separate task, to be done and reviewed first.
 
@@ -86,10 +87,10 @@ Work on a branch, never on a deploy branch.
 1. **Get a pinned Deproi release** into a temporary folder and verify it:
 
    ```bash
-   DEPROI_VERSION=0.1.0
+   DEPROI_VERSION=0.2.0
    git clone --quiet --depth 1 --branch "v$DEPROI_VERSION" https://github.com/rodrigo-pasini/deproi /tmp/deproi
    curl -fsSL "https://github.com/rodrigo-pasini/deproi/releases/download/v$DEPROI_VERSION/SHA256SUMS" -o /tmp/deproi/SHA256SUMS
-   (cd /tmp/deproi && sha256sum --check --ignore-missing SHA256SUMS)
+   (cd /tmp/deproi && sha256sum --check --ignore-missing SHA256SUMS && cd scripts && sha256sum --check --ignore-missing ../SHA256SUMS)
    ```
 
    Use the latest release listed at <https://github.com/rodrigo-pasini/deproi/releases>, not necessarily the number above.
@@ -104,7 +105,7 @@ Work on a branch, never on a deploy branch.
    /tmp/deproi/scripts/render-workflow.sh update > .github/workflows/deproi-update.yml   # recommended
    ```
 
-   `--name` is `<app>-<env>`, lowercase, and must be identical on the server. Do not edit the rendered files.
+   `--name` is `<app>-<env>`, lowercase, and must be identical on the server. Do not edit the rendered files. Each deploy workflow must end up on the branch it deploys (a push only runs the workflows of the pushed branch).
 5. **Draft the server config** for each environment from `/tmp/deproi/templates/server/deproi.example.json` and the [configuration reference](docs/configuration.md). Keep it out of the repository's deploy path: put it in your handover message (or in `docs/deploy/<name>.json.example` without secrets, if the human prefers it versioned). Validate it:
 
    ```bash
@@ -120,18 +121,27 @@ Work on a branch, never on a deploy branch.
 
 ### 6. Hand over to the human
 
-Send this, filled in, after the pull request is open. Replace every `<…>`. One block per environment.
+Send this, filled in, after the pull request is open. Replace every `<…>`. One block per environment. The order matters: the server is prepared from the deploy branch, so the pull request is merged first, with deploys paused.
 
 ````markdown
 ## Deproi setup for <name> — what you need to run
 
-The pull request <link> adds the workflow and prepares the project. Before merging it:
+The pull request <link> prepares the project (Deproi script, workflow, compose changes). Do the steps in this order.
 
-### 🖥️ On the server (<host>), as a user with sudo
+### 1. 🐙 Pause deploys, then merge
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/rodrigo-pasini/deproi/v<version>/scripts/prepare-server.sh
-curl -fsSLO https://raw.githubusercontent.com/rodrigo-pasini/deproi/v<version>/scripts/doctor.sh
-chmod +x prepare-server.sh doctor.sh
+gh api -X PUT repos/<owner/repo>/environments/<github env> --silent
+gh variable set DEPROI_PAUSED --repo <owner/repo> --env <github env> --body true
+```
+Then merge the pull request into <branch>. The workflow only writes "paused".
+
+### 2. 🖥️ On the server (<host>), as a user with sudo
+```bash
+sudo install -d -o <owner> -g <owner> <checkout path>
+sudo -u <owner> git clone -b <branch> <git URL> <checkout path>
+V=<version>; B=https://github.com/rodrigo-pasini/deproi/releases/download/v$V
+curl -fsSLO "$B/prepare-server.sh" -fsSLO "$B/doctor.sh" -fsSLO "$B/SHA256SUMS"
+sha256sum --check --ignore-missing SHA256SUMS && chmod +x prepare-server.sh doctor.sh
 sudo ./prepare-server.sh --name <name> --checkout <checkout path>
 sudo nano /etc/deproi/<name>.json            # paste the config below
 sudo install -m 0600 /dev/null /etc/deproi/<name>.secrets.env && sudo nano /etc/deproi/<name>.secrets.env
@@ -142,20 +152,26 @@ sudo /usr/local/sbin/deproi-<name>           # first deploy by hand: must end wi
 <the JSON config>
 
 Secrets to put in the secrets file: <VAR1>, <VAR2> (values from your password manager).
+<If the project already runs on this server: the data/ports/credentials plan, step by step, BEFORE the first deploy.>
 
-### 💻 On your machine
+### 3. 💻 On your machine
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/rodrigo-pasini/deproi/v<version>/scripts/create-deploy-key.sh
-chmod +x create-deploy-key.sh
-./create-deploy-key.sh --name <name> --host <host> --repo <owner/repo> --environment <github env> --branch <branch>
+V=<version>; B=https://github.com/rodrigo-pasini/deproi/releases/download/v$V
+curl -fsSLO "$B/create-deploy-key.sh" -fsSLO "$B/SHA256SUMS"
+sha256sum --check --ignore-missing SHA256SUMS && chmod +x create-deploy-key.sh
+./create-deploy-key.sh --name <name> --host <host> --port <ssh port> --repo <owner/repo> --environment <github env> --branch <branch>
 ```
-It will ask you to run one more command on the server and to compare the server's fingerprint.
+It prints a `prepare-server.sh … --public-key …` command: run it on the server, in the folder of step 2, with `--checkout <checkout path>`. It also asks you to compare the server's fingerprint.
 
-### 🐙 On GitHub
-1. Merge the pull request into <branch>. The first automatic deploy starts.
-2. Actions → "Deploy <github env>": the summary must show `result: SUCCESS`.
-3. Recommended for production: Settings → Environments → <github env> → Required reviewers.
-4. Settings → Actions → General → allow GitHub Actions to create pull requests (for deproi-update.yml).
+### 4. 🐙 Resume and watch
+```bash
+gh variable delete DEPROI_PAUSED --repo <owner/repo> --env <github env>
+gh workflow run <workflow file> --repo <owner/repo> --ref <branch>
+```
+1. Actions → "Deploy <github env>": the summary must show `result: SUCCESS`.
+2. Recommended for production: Settings → Environments → <github env> → Required reviewers.
+3. Settings → Actions → General → allow GitHub Actions to create pull requests (for deproi-update.yml).
+4. Remove the old deploy's credentials, if any: <list>.
 
 Send me the output of doctor.sh and the result line if anything is not SUCCESS.
 ````
@@ -182,6 +198,11 @@ Ask for evidence instead of assuming it worked:
 | Editing the rendered workflow "to add a step" | Breaks R1 | Hooks on the server, integrations in the config |
 | Testing by pushing to the deploy branch | An unreviewed production deploy | Pull request, then merge |
 | Forgetting the first manual deploy | The first automatic run debugs the server through GitHub logs | `sudo /usr/local/sbin/deproi-<name>` first |
+| Server steps "before merging" | `prepare-server.sh` cannot find `deploy/deproi.py` on the deploy branch | Pause (`DEPROI_PAUSED`), merge, then prepare the server |
+| New `COMPOSE_PROJECT_NAME` for a project that already runs there | New, empty volumes: the app starts on an empty database | Copy the volumes first (installation guide, "moving from an existing deployment") |
+| SSH port other than 22 not passed | The workflow cannot connect | `create-deploy-key.sh --port <port>` (sets `DEPROI_SSH_PORT`) |
+| Same ports or image name for two environments on one server | Port conflict; one environment's cleanup removes the other's previous image | Per-environment `WEB_PORT` and `compose.image` |
+| Database without a `healthcheck:` | Migrations may start before it accepts connections | `pg_isready` / `mysqladmin ping` health check |
 
 ## Upgrading Deproi in a project
 

@@ -7,7 +7,7 @@ Cada ambiente tem um arquivo no servidor: **`/etc/deproi/<name>.json`**, lido po
 - **Dono e modo:** `root:root`, sem escrita para o grupo nem para outros (`0600` recomendado). A pasta `/etc/deproi` também não pode ter escrita para outros. Caso contrário, o Deproi se recusa a rodar.
 - **Rigor:** uma chave desconhecida é um erro que diz o nome da chave (`unknown key compose.profile`). Um erro de digitação nunca desliga uma proteção em silêncio.
 - **Padrões seguros:** toda chave opcional tem um padrão. Um Deproi mais novo continua funcionando com um arquivo mais antigo.
-- **Suporte no editor:** mantenha a linha `$schema` e o VS Code (e a maioria dos editores) vai autocompletar e validar contra o [`deproi.schema.json`](../deproi.schema.json).
+- **Suporte no editor:** mantenha a linha `$schema` e o VS Code (e a maioria dos editores) vai autocompletar e validar contra o [`deproi.schema.json`](../deproi.schema.json). Ele só é lido pelo seu editor; se preferir, fixe-o na tag da sua versão.
 - **Nada de segredos aqui.** Tokens e senhas ficam em arquivos separados, só do root (`0600`), para os quais este arquivo aponta.
 
 ## Um exemplo completo
@@ -96,7 +96,7 @@ Tudo em segundos.
 | `lock` | `1800` | A espera para outro deploy do mesmo ambiente terminar. |
 | `build` | `2400` | `docker compose build`. |
 | `migrations` | `2400` | Todos os ganchos `migrate` juntos. |
-| `health` | `240` | A espera para o serviço web ficar saudável (e de novo depois de uma reversão). |
+| `health` | `240` | A espera para o serviço web ficar saudável (e de novo depois de uma reversão). A espera também termina antes quando o Docker informa `unhealthy` três vezes seguidas. Apps que sobem rápido podem diminuí-lo. |
 | `hook` | `600` | Cada gancho `pre_migrate` / `post_migrate` sem `timeout` próprio. |
 | `post_deploy` | `300` | Cada gancho `post_deploy` sem `timeout` próprio. |
 
@@ -110,6 +110,8 @@ Tudo em segundos.
 ## hooks
 
 Um gancho é um comando que roda **na imagem nova**, via `docker compose run --rm --no-deps <service> <command…>`, antes de os serviços serem recriados. O comando é uma lista de argumentos, nunca uma string de shell.
+
+Os serviços de terceiros (um banco de dados, um cache: qualquer coisa que não rode a sua imagem) são iniciados primeiro, se ainda não estiverem rodando, e o Deproi espera que fiquem saudáveis. Assim, as migrations funcionam também no primeiríssimo deploy. Dê ao seu banco de dados um `healthcheck:` (para o Postgres, `pg_isready`) para que "iniciado" signifique "pronto".
 
 | Ponto | Quando | Padrão em caso de falha |
 |---|---|---|
@@ -142,6 +144,8 @@ Para serviços que não podem ser parados no meio do trabalho, como um worker de
 | `quiesce` | | Opcional: pede que ele pare de pegar trabalho novo. O `busy_check` roda de novo logo em seguida, para nada escapar no meio. |
 | `resume` | | Opcional: desfaz o `quiesce` quando o serviço acaba não sendo recriado. |
 
+`busy_check`, `quiesce` e `resume` são listas de argumentos rodadas com `docker exec`, sem shell: use programas que existam na imagem (`["test", "!", "-e", "/tmp/working"]`, `["touch", "/tmp/paused"]`, `["node", "busy.js"]`).
+
 O que acontece com cada serviço protegido:
 
 | Estado | O que o Deproi faz | Na linha `result:` |
@@ -150,6 +154,14 @@ O que acontece com cada serviço protegido:
 | Contêiner existe, mas está parado | Não mexe nele (alguém o parou de propósito) | `stopped` |
 | Ocupado, ou sem resposta | Mantém na versão anterior; o deploy é `SUCCESS_PROTECTED_DEFERRED` | `deferred` |
 | Livre | Recria depois dos outros serviços | `updated` |
+
+Bom saber:
+
+- **Ordem:** os outros serviços são recriados primeiro e depois os protegidos livres. Use o `quiesce` (e confira de novo) para que nenhuma tarefa comece no meio.
+- **Reversão:** um serviço protegido livre que foi atualizado volta junto com o resto (`rolled_back`); um ocupado fica na versão nova.
+- **Parada elegante:** trate o `SIGTERM` terminando a tarefa atual e defina `stop_grace_period` no Compose com a duração da tarefa mais longa. Isso também cobre a rara corrida entre a verificação de ocupado e a recriação.
+- **Política de reinício:** dê a ele `restart: unless-stopped`. Um serviço protegido cujo contêiner existe mas está parado nunca é iniciado pelo Deproi (alguém pode tê-lo parado de propósito), então um que caiu sem política de reinício ficaria fora do ar.
+- **Sempre ocupado:** um worker que nunca fica livre nunca é atualizado. Esvazie a fila ou rode o deploy de novo pelo Actions quando ele estiver livre.
 
 ## Arquivos ao lado da configuração
 

@@ -135,7 +135,8 @@ assert module.SELF_UPDATING is True and callable(module.main)
 print(module.DEPROI_VERSION)
 ' "$SOURCE" > /dev/null || fail "$SOURCE does not load as Deproi"
 install -o root -g root -m 0755 "$SOURCE" "$COMMAND"
-ok "installed $(sed -n 's/^DEPROI_VERSION = "\(.*\)"$/\1/p' "$COMMAND") (root:root 0755)"
+VERSION=$(sed -n 's/^DEPROI_VERSION = "\(.*\)"$/\1/p' "$COMMAND")
+ok "installed $VERSION (root:root 0755)"
 
 step "Configuration $CONFIG"
 install -d -o root -g root -m 0755 "$CONFIG_DIR"
@@ -146,7 +147,7 @@ else
   temporary=$(mktemp)
   cat > "$temporary" << EOF
 {
-  "\$schema": "https://raw.githubusercontent.com/rodrigo-pasini/deproi/main/deproi.schema.json",
+  "\$schema": "https://raw.githubusercontent.com/rodrigo-pasini/deproi/v$VERSION/deproi.schema.json",
   "name": "$NAME",
   "language": "en",
   "checkout": {

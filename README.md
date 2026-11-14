@@ -54,7 +54,7 @@ sudo nano /etc/deproi/myapp-prod.json
 sudo /usr/local/sbin/deproi-myapp-prod        # first deploy, by hand
 
 # 💻 on your machine
-./create-deploy-key.sh --name myapp-prod --host 203.0.113.10 \
+./create-deploy-key.sh --name myapp-prod --host 203.0.113.10 --port 22 \
     --repo acme/myapp --environment production --branch main
 scripts/render-workflow.sh deploy --name myapp-prod --branch main --environment production \
     > .github/workflows/deploy-production.yml

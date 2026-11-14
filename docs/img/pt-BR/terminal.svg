@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 743" width="1200" height="743" role="img" aria-label="Um log real de deploy, como o GitHub Actions mostra">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 781" width="1200" height="781" role="img" aria-label="Um log real de deploy, como o GitHub Actions mostra">
 <title>Um log real de deploy, como o GitHub Actions mostra</title>
 <style>
   :root, svg {
@@ -22,113 +22,119 @@
   .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
   .edge { stroke: var(--edge); stroke-width: 2; fill: none; }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
-@keyframes t0 { 0%, 3.57% { opacity: 0; } 4.46%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t0 { animation: t0 16.80s steps(1, end) infinite; }
-@keyframes t1 { 0%, 5.48% { opacity: 0; } 6.37%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t1 { animation: t1 16.80s steps(1, end) infinite; }
-@keyframes t2 { 0%, 7.38% { opacity: 0; } 8.27%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t2 { animation: t2 16.80s steps(1, end) infinite; }
-@keyframes t3 { 0%, 9.29% { opacity: 0; } 10.18%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t3 { animation: t3 16.80s steps(1, end) infinite; }
-@keyframes t4 { 0%, 11.19% { opacity: 0; } 12.08%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t4 { animation: t4 16.80s steps(1, end) infinite; }
-@keyframes t5 { 0%, 13.10% { opacity: 0; } 13.99%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t5 { animation: t5 16.80s steps(1, end) infinite; }
-@keyframes t6 { 0%, 15.00% { opacity: 0; } 15.89%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t6 { animation: t6 16.80s steps(1, end) infinite; }
-@keyframes t7 { 0%, 16.90% { opacity: 0; } 17.80%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t7 { animation: t7 16.80s steps(1, end) infinite; }
-@keyframes t8 { 0%, 18.81% { opacity: 0; } 19.70%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t8 { animation: t8 16.80s steps(1, end) infinite; }
-@keyframes t9 { 0%, 20.71% { opacity: 0; } 21.61%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t9 { animation: t9 16.80s steps(1, end) infinite; }
-@keyframes t10 { 0%, 22.62% { opacity: 0; } 23.51%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t10 { animation: t10 16.80s steps(1, end) infinite; }
-@keyframes t11 { 0%, 24.52% { opacity: 0; } 25.42%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t11 { animation: t11 16.80s steps(1, end) infinite; }
-@keyframes t12 { 0%, 26.43% { opacity: 0; } 27.32%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t12 { animation: t12 16.80s steps(1, end) infinite; }
-@keyframes t13 { 0%, 28.33% { opacity: 0; } 29.23%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t13 { animation: t13 16.80s steps(1, end) infinite; }
-@keyframes t14 { 0%, 30.24% { opacity: 0; } 31.13%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t14 { animation: t14 16.80s steps(1, end) infinite; }
-@keyframes t15 { 0%, 32.14% { opacity: 0; } 33.04%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t15 { animation: t15 16.80s steps(1, end) infinite; }
-@keyframes t16 { 0%, 34.05% { opacity: 0; } 34.94%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t16 { animation: t16 16.80s steps(1, end) infinite; }
-@keyframes t17 { 0%, 35.95% { opacity: 0; } 36.85%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t17 { animation: t17 16.80s steps(1, end) infinite; }
-@keyframes t18 { 0%, 37.86% { opacity: 0; } 38.75%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t18 { animation: t18 16.80s steps(1, end) infinite; }
-@keyframes t19 { 0%, 39.76% { opacity: 0; } 40.65%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t19 { animation: t19 16.80s steps(1, end) infinite; }
-@keyframes t20 { 0%, 41.67% { opacity: 0; } 42.56%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t20 { animation: t20 16.80s steps(1, end) infinite; }
-@keyframes t21 { 0%, 43.57% { opacity: 0; } 44.46%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t21 { animation: t21 16.80s steps(1, end) infinite; }
-@keyframes t22 { 0%, 45.48% { opacity: 0; } 46.37%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t22 { animation: t22 16.80s steps(1, end) infinite; }
-@keyframes t23 { 0%, 47.38% { opacity: 0; } 48.27%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t23 { animation: t23 16.80s steps(1, end) infinite; }
-@keyframes t24 { 0%, 49.29% { opacity: 0; } 50.18%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t24 { animation: t24 16.80s steps(1, end) infinite; }
-@keyframes t25 { 0%, 51.19% { opacity: 0; } 52.08%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t25 { animation: t25 16.80s steps(1, end) infinite; }
-@keyframes t26 { 0%, 53.10% { opacity: 0; } 53.99%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t26 { animation: t26 16.80s steps(1, end) infinite; }
-@keyframes t27 { 0%, 55.00% { opacity: 0; } 55.89%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t27 { animation: t27 16.80s steps(1, end) infinite; }
-@keyframes t28 { 0%, 56.90% { opacity: 0; } 57.80%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t28 { animation: t28 16.80s steps(1, end) infinite; }
-@keyframes t29 { 0%, 58.81% { opacity: 0; } 59.70%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t29 { animation: t29 16.80s steps(1, end) infinite; }
-@keyframes t30 { 0%, 60.71% { opacity: 0; } 61.61%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t30 { animation: t30 16.80s steps(1, end) infinite; }
-@keyframes t31 { 0%, 62.62% { opacity: 0; } 63.51%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t31 { animation: t31 16.80s steps(1, end) infinite; }
-@keyframes t32 { 0%, 64.52% { opacity: 0; } 65.42%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t32 { animation: t32 16.80s steps(1, end) infinite; }
-@keyframes t33 { 0%, 66.43% { opacity: 0; } 67.32%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t33 { animation: t33 16.80s steps(1, end) infinite; }
-@keyframes t34 { 0%, 68.33% { opacity: 0; } 69.23%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
-.t34 { animation: t34 16.80s steps(1, end) infinite; }
+@keyframes t0 { 0%, 3.44% { opacity: 0; } 4.30%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t0 { animation: t0 17.44s steps(1, end) infinite; }
+@keyframes t1 { 0%, 5.28% { opacity: 0; } 6.14%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t1 { animation: t1 17.44s steps(1, end) infinite; }
+@keyframes t2 { 0%, 7.11% { opacity: 0; } 7.97%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t2 { animation: t2 17.44s steps(1, end) infinite; }
+@keyframes t3 { 0%, 8.94% { opacity: 0; } 9.81%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t3 { animation: t3 17.44s steps(1, end) infinite; }
+@keyframes t4 { 0%, 10.78% { opacity: 0; } 11.64%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t4 { animation: t4 17.44s steps(1, end) infinite; }
+@keyframes t5 { 0%, 12.61% { opacity: 0; } 13.47%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t5 { animation: t5 17.44s steps(1, end) infinite; }
+@keyframes t6 { 0%, 14.45% { opacity: 0; } 15.31%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t6 { animation: t6 17.44s steps(1, end) infinite; }
+@keyframes t7 { 0%, 16.28% { opacity: 0; } 17.14%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t7 { animation: t7 17.44s steps(1, end) infinite; }
+@keyframes t8 { 0%, 18.12% { opacity: 0; } 18.98%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t8 { animation: t8 17.44s steps(1, end) infinite; }
+@keyframes t9 { 0%, 19.95% { opacity: 0; } 20.81%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t9 { animation: t9 17.44s steps(1, end) infinite; }
+@keyframes t10 { 0%, 21.79% { opacity: 0; } 22.65%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t10 { animation: t10 17.44s steps(1, end) infinite; }
+@keyframes t11 { 0%, 23.62% { opacity: 0; } 24.48%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t11 { animation: t11 17.44s steps(1, end) infinite; }
+@keyframes t12 { 0%, 25.46% { opacity: 0; } 26.32%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t12 { animation: t12 17.44s steps(1, end) infinite; }
+@keyframes t13 { 0%, 27.29% { opacity: 0; } 28.15%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t13 { animation: t13 17.44s steps(1, end) infinite; }
+@keyframes t14 { 0%, 29.13% { opacity: 0; } 29.99%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t14 { animation: t14 17.44s steps(1, end) infinite; }
+@keyframes t15 { 0%, 30.96% { opacity: 0; } 31.82%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t15 { animation: t15 17.44s steps(1, end) infinite; }
+@keyframes t16 { 0%, 32.80% { opacity: 0; } 33.66%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t16 { animation: t16 17.44s steps(1, end) infinite; }
+@keyframes t17 { 0%, 34.63% { opacity: 0; } 35.49%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t17 { animation: t17 17.44s steps(1, end) infinite; }
+@keyframes t18 { 0%, 36.47% { opacity: 0; } 37.33%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t18 { animation: t18 17.44s steps(1, end) infinite; }
+@keyframes t19 { 0%, 38.30% { opacity: 0; } 39.16%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t19 { animation: t19 17.44s steps(1, end) infinite; }
+@keyframes t20 { 0%, 40.14% { opacity: 0; } 41.00%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t20 { animation: t20 17.44s steps(1, end) infinite; }
+@keyframes t21 { 0%, 41.97% { opacity: 0; } 42.83%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t21 { animation: t21 17.44s steps(1, end) infinite; }
+@keyframes t22 { 0%, 43.81% { opacity: 0; } 44.67%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t22 { animation: t22 17.44s steps(1, end) infinite; }
+@keyframes t23 { 0%, 45.64% { opacity: 0; } 46.50%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t23 { animation: t23 17.44s steps(1, end) infinite; }
+@keyframes t24 { 0%, 47.48% { opacity: 0; } 48.34%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t24 { animation: t24 17.44s steps(1, end) infinite; }
+@keyframes t25 { 0%, 49.31% { opacity: 0; } 50.17%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t25 { animation: t25 17.44s steps(1, end) infinite; }
+@keyframes t26 { 0%, 51.15% { opacity: 0; } 52.01%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t26 { animation: t26 17.44s steps(1, end) infinite; }
+@keyframes t27 { 0%, 52.98% { opacity: 0; } 53.84%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t27 { animation: t27 17.44s steps(1, end) infinite; }
+@keyframes t28 { 0%, 54.82% { opacity: 0; } 55.68%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t28 { animation: t28 17.44s steps(1, end) infinite; }
+@keyframes t29 { 0%, 56.65% { opacity: 0; } 57.51%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t29 { animation: t29 17.44s steps(1, end) infinite; }
+@keyframes t30 { 0%, 58.49% { opacity: 0; } 59.35%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t30 { animation: t30 17.44s steps(1, end) infinite; }
+@keyframes t31 { 0%, 60.32% { opacity: 0; } 61.18%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t31 { animation: t31 17.44s steps(1, end) infinite; }
+@keyframes t32 { 0%, 62.16% { opacity: 0; } 63.02%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t32 { animation: t32 17.44s steps(1, end) infinite; }
+@keyframes t33 { 0%, 63.99% { opacity: 0; } 64.85%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t33 { animation: t33 17.44s steps(1, end) infinite; }
+@keyframes t34 { 0%, 65.83% { opacity: 0; } 66.69%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t34 { animation: t34 17.44s steps(1, end) infinite; }
+@keyframes t35 { 0%, 67.66% { opacity: 0; } 68.52%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t35 { animation: t35 17.44s steps(1, end) infinite; }
+@keyframes t36 { 0%, 69.50% { opacity: 0; } 70.36%, 95% { opacity: 1; } 99%, 100% { opacity: 0; } }
+.t36 { animation: t36 17.44s steps(1, end) infinite; }
 </style>
-<rect x="0" y="0" width="1200" height="743" rx="14" fill="#0d1117" stroke="#30363d"/>
+<rect x="0" y="0" width="1200" height="781" rx="14" fill="#0d1117" stroke="#30363d"/>
 <circle cx="24" cy="22" r="6" fill="#ff5f57"/><circle cx="44" cy="22" r="6" fill="#febc2e"/><circle cx="64" cy="22" r="6" fill="#28c840"/>
 <line x1="0" y1="40" x2="1200" y2="40" stroke="#30363d"/>
 <text class="t0 mono" x="22" y="67" font-size="13" style="fill: #7ee787" font-weight="700" xml:space="preserve">$ Actions › Deploy production › ssh deproi@server</text>
-<text class="t1 mono" x="22" y="86" font-size="13" style="fill: #e6edf3" font-weight="700" xml:space="preserve">Deproi 0.1.0 — deproi-example-prod</text>
+<text class="t1 mono" x="22" y="86" font-size="13" style="fill: #e6edf3" font-weight="700" xml:space="preserve">Deproi 0.2.0 — deproi-example-prod</text>
 <text class="t2 mono" x="22" y="105" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Trava  ·  0 s</text>
 <text class="t3 mono" x="22" y="124" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Espaço em disco  ·  0 s</text>
-<text class="t4 mono" x="22" y="143" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  Espaço livre para o Docker: 24.4 GB</text>
+<text class="t4 mono" x="22" y="143" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  Espaço livre para o Docker: 22.2 GB</text>
 <text class="t5 mono" x="22" y="162" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Atualizar o código  ·  0 s</text>
-<text class="t6 mono" x="22" y="181" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  Commit a publicar: 96fcbba03574</text>
+<text class="t6 mono" x="22" y="181" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  Commit a publicar: 31b0a2cbf416</text>
 <text class="t7 mono" x="22" y="200" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Script de deploy  ·  0 s</text>
-<text class="t8 mono" x="22" y="219" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  Script de deploy em dia (ed99e76e7fd0, versão 0.1.0).</text>
+<text class="t8 mono" x="22" y="219" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  Script de deploy em dia (03a0484c747c, versão 0.2.0).</text>
 <text class="t9 mono" x="22" y="238" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Definição do Compose  ·  0 s</text>
 <text class="t10 mono" x="22" y="257" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  Serviços: web-prod, worker-prod</text>
-<text class="t11 mono" x="22" y="276" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Construir a imagem deproi-example:96fcbba03574  ·  0 s</text>
+<text class="t11 mono" x="22" y="276" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Construir a imagem deproi-example:31b0a2cbf416  ·  0 s</text>
 <text class="t12 mono" x="22" y="295" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Healthcheck do web-prod  ·  0 s</text>
 <text class="t13 mono" x="22" y="314" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  Healthcheck encontrado (Dockerfile HEALTHCHECK).</text>
-<text class="t14 mono" x="22" y="333" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Ganchos: pre_migrate  ·  0 s</text>
-<text class="t15 mono" x="22" y="352" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  Nenhum gancho configurado.</text>
-<text class="t16 mono" x="22" y="371" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Ganchos: migrate  ·  0 s</text>
-<text class="t17 mono" x="22" y="390" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  Gancho schema: python migrate.py</text>
-<text class="t18 mono" x="22" y="409" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  schema at version 3</text>
-<text class="t19 mono" x="22" y="428" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Ganchos: post_migrate  ·  0 s</text>
-<text class="t20 mono" x="22" y="447" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  Nenhum gancho configurado.</text>
-<text class="t21 mono" x="22" y="466" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Serviços protegidos  ·  0 s</text>
-<text class="t22 mono" x="22" y="485" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  worker-prod está livre: entra na recriação.</text>
-<text class="t23 mono" x="22" y="504" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Recriar os serviços  ·  1 s</text>
-<text class="t24 mono" x="22" y="523" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  Imagem em uso antes do deploy: 3e02c1525446</text>
-<text class="t25 mono" x="22" y="542" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Esperar o web-prod ficar saudável  ·  2 s</text>
-<text class="t26 mono" x="22" y="561" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  saúde do web-prod: starting</text>
-<text class="t27 mono" x="22" y="580" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  saúde do web-prod: healthy</text>
-<text class="t28 mono" x="22" y="599" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Limpar imagens antigas  ·  0 s</text>
-<text class="t29 mono" x="22" y="618" font-size="13" style="fill: #8b949e" xml:space="preserve">betterstack: desligado neste servidor</text>
-<text class="t30 mono" x="22" y="637" font-size="13" style="fill: #8b949e" xml:space="preserve">cloudflare: purga desligada</text>
-<text class="t31 mono" x="22" y="656" font-size="13" style="fill: #8b949e" xml:space="preserve">webhook: desligado</text>
-<text class="t32 mono" x="22" y="675" font-size="13" style="fill: #8b949e" xml:space="preserve">post_deploy: Nenhum gancho configurado.</text>
-<text class="t33 mono" x="22" y="694" font-size="13" style="fill: #e6edf3" font-weight="700" xml:space="preserve">message: deproi-example-prod publicado: commit 96fcbba03574 no ar em http://127.0.0.1:8080 (4 s).</text>
-<text class="t34 mono" x="22" y="713" font-size="13" style="fill: #3fb950" font-weight="700" xml:space="preserve">result: SUCCESS commit=96fcbba03574 previous=3e02c1525446 duration=4s protected=worker-prod:updated step=cleanup script=up_to_date</text>
+<text class="t14 mono" x="22" y="333" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Dependências  ·  0 s</text>
+<text class="t15 mono" x="22" y="352" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  Nenhum serviço de terceiros.</text>
+<text class="t16 mono" x="22" y="371" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Ganchos: pre_migrate  ·  0 s</text>
+<text class="t17 mono" x="22" y="390" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  Nenhum gancho configurado.</text>
+<text class="t18 mono" x="22" y="409" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Ganchos: migrate  ·  0 s</text>
+<text class="t19 mono" x="22" y="428" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  Gancho schema: python migrate.py</text>
+<text class="t20 mono" x="22" y="447" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  schema at version 3</text>
+<text class="t21 mono" x="22" y="466" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Ganchos: post_migrate  ·  0 s</text>
+<text class="t22 mono" x="22" y="485" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  Nenhum gancho configurado.</text>
+<text class="t23 mono" x="22" y="504" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Serviços protegidos  ·  0 s</text>
+<text class="t24 mono" x="22" y="523" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  worker-prod está livre: entra na recriação.</text>
+<text class="t25 mono" x="22" y="542" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Recriar os serviços  ·  1 s</text>
+<text class="t26 mono" x="22" y="561" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  Imagem em uso antes do deploy: 4c10dd8a758e</text>
+<text class="t27 mono" x="22" y="580" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Esperar o web-prod ficar saudável  ·  2 s</text>
+<text class="t28 mono" x="22" y="599" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  saúde do web-prod: starting</text>
+<text class="t29 mono" x="22" y="618" font-size="13" style="fill: #c9d1d9" xml:space="preserve">  saúde do web-prod: healthy</text>
+<text class="t30 mono" x="22" y="637" font-size="13" style="fill: #79c0ff" font-weight="700" xml:space="preserve">▸ Limpar imagens antigas  ·  0 s</text>
+<text class="t31 mono" x="22" y="656" font-size="13" style="fill: #8b949e" xml:space="preserve">betterstack: desligado neste servidor</text>
+<text class="t32 mono" x="22" y="675" font-size="13" style="fill: #8b949e" xml:space="preserve">cloudflare: purga desligada</text>
+<text class="t33 mono" x="22" y="694" font-size="13" style="fill: #8b949e" xml:space="preserve">webhook: desligado</text>
+<text class="t34 mono" x="22" y="713" font-size="13" style="fill: #8b949e" xml:space="preserve">post_deploy: Nenhum gancho configurado.</text>
+<text class="t35 mono" x="22" y="732" font-size="13" style="fill: #e6edf3" font-weight="700" xml:space="preserve">message: deproi-example-prod publicado: commit 31b0a2cbf416 no ar em http://127.0.0.1:8080 (6 s).</text>
+<text class="t36 mono" x="22" y="751" font-size="13" style="fill: #3fb950" font-weight="700" xml:space="preserve">result: SUCCESS commit=31b0a2cbf416 previous=4c10dd8a758e duration=6s protected=worker-prod:updated step=cleanup script=up_to_date</text>
 </svg>

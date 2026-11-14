@@ -46,10 +46,11 @@ Each step is a collapsible group in the Actions log, with its duration as the la
 | 5 | **Compose definition** | `docker compose config` of the new commit: every service has the environment suffix, the web service exists, built services are tagged `<image>:<commit>`. | `REFUSED` — nothing built |
 | 6 | **Build** | `docker compose build`, low priority, tagged with the commit. | `FAILED_NO_CHANGE` |
 | 7 | **Health check** | The web service must have one (compose `healthcheck:` or Dockerfile `HEALTHCHECK`). | `REFUSED` |
-| 8 | **Hooks** | `pre_migrate` → `migrate` → `post_migrate`, each on the new image. | per hook: `fail`, `refuse` or `warn` |
+| 8 | **Dependencies** | Third-party services (database, cache) that are not running yet are started, and Deproi waits for them to be healthy. Running ones are left alone. | `FAILED_NO_CHANGE` |
+| 8b | **Hooks** | `pre_migrate` → `migrate` → `post_migrate`, each on the new image. | per hook: `fail`, `refuse` or `warn` |
 | 9 | **Protected services** | Busy workers are left on their version; idle ones may be quiesced. | — |
-| 10 | **Recreate** | `docker compose up -d --remove-orphans` (`--force-recreate` when republishing the same commit). Monitors get a grace period, if configured. | goes to rollback |
-| 11 | **Health** | Waits until every web container is `healthy`, up to `timeouts.health`. | goes to rollback |
+| 10 | **Recreate** | `docker compose up -d --remove-orphans`. When republishing the same commit, the project's own services are force-recreated (never third-party ones). Monitors get a grace period, if configured. | goes to rollback |
+| 11 | **Health** | Waits until every web container is `healthy`, up to `timeouts.health`, or until Docker reports `unhealthy` three times in a row. | goes to rollback |
 | 12 | **Rollback** | Only when 10 or 11 failed: the previous image **and the previous compose definition** come back, and health is checked again. | `FAILED_ROLLED_BACK` or `FAILED_ROLLBACK` |
 | 13 | **Clean up** | Removes old images of this environment (never the current, the previous or one in use). | warning only |
 | 14 | **Summary** | `betterstack:`, `cloudflare:`, `webhook:`, `post_deploy:`, then `message:` and `result:`. The post-deploy work detaches and runs in the background. | — |

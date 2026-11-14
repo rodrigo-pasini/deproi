@@ -148,7 +148,10 @@ def core(calls) -> list:
     return kinds
 
 
-UNHEALTHY_THEN_HEALTHY = 49  # the first health wait fails (240 s / 5 s + 1 checks), the rollback's is healthy
+# The first health wait fails, the rollback's is healthy. The origin waits the whole timeout
+# (240 s / 5 s + 1 checks); Deproi deliberately gives up after 3 "unhealthy" in a row.
+UNHEALTHY_THEN_HEALTHY = 49
+DEPROI_UNHEALTHY_IN_A_ROW = 3
 
 SCENARIOS = {
     "success": {},
@@ -166,7 +169,7 @@ def test_same_core_behaviour(origin, tmp_path, capsys, scenario):
     (tmp_path / "d").mkdir()
     if kwargs.pop("rollback_healthy", False):
         origin_health = ["unhealthy\n"] * UNHEALTHY_THEN_HEALTHY + ["healthy\n"]
-        deproi_health = [deproi.Result(0, "unhealthy\n")] * UNHEALTHY_THEN_HEALTHY + [deproi.Result(0, "healthy\n")]
+        deproi_health = [deproi.Result(0, "unhealthy\n")] * DEPROI_UNHEALTHY_IN_A_ROW + [deproi.Result(0, "healthy\n")]
         origin_code, origin_calls = run_origin(origin, tmp_path / "o", health=origin_health)
         deproi_code, deproi_calls = run_deproi(tmp_path / "d", capsys, health=deproi_health)
     else:

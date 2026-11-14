@@ -56,15 +56,19 @@ When the summary says the server did not answer, nothing was changed: check `DEP
 ```bash
 journalctl -t deproi-myapp-prod -n 50            # starts, results, post-deploy
 journalctl -t deproi-myapp-prod | grep 'result:'  # history of results
-sudo docker compose -p myapp-prod logs --tail 100 web-prod
+sudo docker logs --tail 100 myapp-prod-web-prod-1
 sudo docker ps -a --filter label=com.docker.compose.project=myapp-prod
 ```
+
+`docker logs <container>` needs no env file. For `docker compose` commands, pass the same files Deproi uses (`--env-file deploy/prod.compose.env --env-file /etc/deproi/myapp-prod.secrets.env --profile prod`), or variables from the secrets file come out empty.
 
 The new version's containers are gone after a rollback, but its build is kept: `docker image ls myapp`.
 
 ## Run a deploy again
 
 **Actions → Deploy production → Run workflow** republishes the latest commit of the branch (useful after changing the server config or secrets). On the server: `sudo /usr/local/sbin/deproi-myapp-prod`.
+
+Republishing the same commit force-recreates the project's own services (those running your image), so they pick up new secrets. Third-party services such as the database are left running, and busy protected services keep their usual rules.
 
 ## Pause deploys
 
@@ -76,12 +80,13 @@ When Deproi cannot recover (`FAILED_ROLLBACK`), publish a known-good version you
 
 ```bash
 cd /srv/myapp-prod
-docker image ls myapp                                  # pick a tag that worked (12 hex characters)
-export DEPROI_TAG=<tag>
-sudo -E docker compose -p myapp-prod --env-file deploy/prod.compose.env \
-     --env-file /etc/deproi/myapp-prod.secrets.env --profile prod up -d --remove-orphans
+sudo docker image ls myapp                             # pick a tag that worked (12 hex characters)
+sudo env DEPROI_TAG=<tag> docker compose -p myapp-prod --env-file deploy/prod.compose.env \
+     --env-file /etc/deproi/myapp-prod.secrets.env --profile prod up -d web-prod
 sudo docker ps --filter label=com.docker.compose.project=myapp-prod
 ```
+
+Name the services to bring back (here `web-prod`), so a busy protected worker is not recreated in the middle of a job. Drop the secrets `--env-file` if the environment has none.
 
 Then fix the branch. The next push deploys normally.
 

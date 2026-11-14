@@ -6,9 +6,25 @@ Todas as mudanças relevantes do Deproi ficam registradas aqui. O formato segue 
 
 ## [Não lançado]
 
+## [0.2.0] - 2026-11-14
+
 ### Adicionado
 
 - `scripts/try-locally.sh`: ensaia o deploy de um projeto num contêiner servidor descartável, antes de mexer num servidor real.
+
+### Alterado
+
+- O deploy agora sobe os serviços de terceiros (banco, cache) que ainda não estão rodando, e espera que fiquem saudáveis, antes dos ganchos: as migrations funcionam já no primeiro deploy.
+- A espera da saúde termina cedo quando o Docker reporta `unhealthy` três vezes seguidas, então uma versão quebrada é revertida em segundos, e não depois do timeout inteiro.
+- Republicar o mesmo commit recria à força só os serviços do próprio projeto, nunca os de terceiros, como o banco.
+- As releases incluem `prepare-server.sh`, `doctor.sh` e `create-deploy-key.sh` no `SHA256SUMS`; a documentação os confere antes de rodar. O atualizador confere o `deproi.py` com `--ignore-missing`.
+- A configuração inicial escrita pelo `prepare-server.sh` fixa o `$schema` na versão instalada.
+
+### Documentação
+
+- Uma ordem de instalação que funciona: pausar os deploys, mergear, preparar o servidor, criar a chave, retomar. Acesso de fetch para o dono do checkout, `--port`, downloads conferidos.
+- Migrar de um deploy existente (volumes, portas, órfãos, credenciais antigas); servidores compartilhados (portas, nomes de imagem); serviços protegidos (ordem, reversão, parada graciosa, política de restart); plano B e comandos de log corrigidos; receita para Node.js.
+- Achados de duas implantações piloto feitas por agentes de IA (Django + Postgres, Node + Redis com worker protegido).
 
 ## [0.1.0] - 2026-11-14
 

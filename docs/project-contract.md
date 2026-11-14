@@ -4,6 +4,8 @@
 
 Deproi works with any stack that runs in Docker Compose. Your project needs five things. The [example](../example/) has all of them.
 
+Deproi reads `compose.yaml` by default. If your file is `docker-compose.yml` (or there are several), list them in `compose.files` in the [configuration](configuration.md#compose).
+
 ## 1. A Dockerfile, and a health check on the web service
 
 The health check is how Deproi tells a broken version from a healthy one. Without it, the deploy is refused.
@@ -45,6 +47,10 @@ services:
 
 Every service with `build:` must use `image: <compose.image>:${DEPROI_TAG}`. Services that reuse your image (workers) should use the same tag. Third-party images (`postgres:16`, `redis:7`) keep their own tags.
 
+Deproi sets `DEPROI_TAG` in the process environment, which wins over any value in an env file: `DEPROI_TAG=local` in the env file is only the default for running the project by hand.
+
+Services that use your image are "the project's own" and are recreated on every deploy. Third-party services (a database, a cache) are started before the hooks if they are not running, and are only recreated when their definition changes.
+
 ## 3. A profile and a suffix per environment
 
 If several environments (or apps) share a server, every service of an environment carries its profile and a name suffix:
@@ -62,6 +68,10 @@ services:
 With `compose.service_suffix: "-prod"`, Deproi refuses a definition where a service without the suffix would start: a service without `profiles:` is active in **every** profile and would end up in every project.
 
 A server with a single environment can skip profiles and the suffix.
+
+On a shared server, each environment also needs its **own published ports** (for example `${WEB_PORT}` in the env file: 3000 for production, 3001 for staging) and its **own image name** (`compose.image`: `myapp` and `myapp-staging`), so the cleanup of one never removes the other's previous image.
+
+With profiles on every service, a plain `docker compose up` starts nothing: run the project by hand with `docker compose --env-file deploy/prod.compose.env --profile prod up`.
 
 ## 4. A versioned env file (recommended)
 
@@ -90,6 +100,9 @@ Commit `deproi.py` to your project, by default as `deploy/deproi.py`. The server
 - [ ] No secrets in the repository; they go in `/etc/deproi/<name>.secrets.env`.
 - [ ] `deploy/deproi.py` is committed.
 - [ ] Migrations keep the previous version working (expand now, contract in a later deploy): a rollback does not undo them.
+- [ ] Services have `restart: unless-stopped` (Deproi never starts a stopped protected service by itself), and stop quickly on `SIGTERM` (`init: true` if needed).
+- [ ] On a shared server: different published ports and image names per environment.
+- [ ] `compose.files` lists your compose file if it is not `compose.yaml`.
 - [ ] `docker compose --env-file deploy/<env>.compose.env --profile <env> config` works on your machine.
 
 Stack-specific examples: [recipes](recipes.md).

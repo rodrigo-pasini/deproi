@@ -1,32 +1,32 @@
-Deproi 0.1.0 — deproi-example-prod
+Deproi 0.2.0 — deproi-example-prod
 ::group::Lock
 (Lock: 0 s)
 ::endgroup::
 ::group::Disk space
-Free space for Docker: 24.2 GB
+Free space for Docker: 22.5 GB
 (Disk space: 0 s)
 ::endgroup::
 ::group::Update the code
 From /srv/origin
  * branch            main       -> FETCH_HEAD
-   91a22fc..4664205  main       -> origin/main
-Updating 91a22fc..4664205
+   d464af5..0688249  main       -> origin/main
+Updating d464af5..0688249
 Fast-forward
  app/server.py | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
-Commit to publish: 46642052eea9
+Commit to publish: 0688249540cd
 (Update the code: 0 s)
 ::endgroup::
 ::group::Deploy script
-Deploy script up to date (ed99e76e7fd0, version 0.1.0).
+Deploy script up to date (03a0484c747c, version 0.2.0).
 (Deploy script: 0 s)
 ::endgroup::
 ::group::Compose definition
 Services: web-prod, worker-prod
 (Compose definition: 0 s)
 ::endgroup::
-::group::Build the image deproi-example:46642052eea9
-time="2026-11-14T18:23:39Z" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
+::group::Build the image deproi-example:0688249540cd
+time="2026-11-14T19:03:20Z" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
 #0 building with "default" instance using docker driver
 
 #1 [web-prod internal] load build definition from Dockerfile
@@ -44,13 +44,13 @@ time="2026-11-14T18:23:39Z" level=warning msg="Docker Compose is configured to b
 #4 DONE 0.0s
 
 #5 [web-prod internal] load build context
-#5 transferring context: 1.53kB done
+#5 transferring context: 1.55kB done
 #5 DONE 0.0s
 
-#6 [web-prod 2/4] WORKDIR /app
+#6 [web-prod 3/4] COPY app/ /app/
 #6 CACHED
 
-#7 [web-prod 3/4] COPY app/ /app/
+#7 [web-prod 2/4] WORKDIR /app
 #7 CACHED
 
 #8 [web-prod 4/4] RUN mkdir /data && chown nobody /data
@@ -58,19 +58,23 @@ time="2026-11-14T18:23:39Z" level=warning msg="Docker Compose is configured to b
 
 #9 [web-prod] exporting to image
 #9 exporting layers done
-#9 writing image sha256:65b8a8c3f717ad2d1fff275b56a6add2729e9d8fcfc632f17305b3b4d9219157 done
-#9 naming to docker.io/library/deproi-example:46642052eea9 done
+#9 writing image sha256:23942fe9eaf90a7ed465de1c35f7b629fe58a228bf89df11543ba4c536e73538 done
+#9 naming to docker.io/library/deproi-example:0688249540cd done
 #9 DONE 0.0s
 
 #10 [web-prod] resolving provenance for metadata file
 #10 DONE 0.0s
-time="2026-11-14T18:23:39Z" level=warning msg="current commit information was not captured by the build" error="failed to read current commit information with git rev-parse --is-inside-work-tree"
+time="2026-11-14T19:03:20Z" level=warning msg="current commit information was not captured by the build" error="failed to read current commit information with git rev-parse --is-inside-work-tree"
  web-prod  Built
-(Build the image deproi-example:46642052eea9: 0 s)
+(Build the image deproi-example:0688249540cd: 0 s)
 ::endgroup::
 ::group::Health check of web-prod
 Health check found (Dockerfile HEALTHCHECK).
 (Health check of web-prod: 0 s)
+::endgroup::
+::group::Dependencies
+No third-party services.
+(Dependencies: 0 s)
 ::endgroup::
 ::group::Hooks: pre_migrate
 No hooks configured.
@@ -79,7 +83,7 @@ No hooks configured.
 ::group::Hooks: migrate
 Hook schema: python migrate.py
 schema at version 3
-(Hooks: migrate: 0 s)
+(Hooks: migrate: 2 s)
 ::endgroup::
 ::group::Hooks: post_migrate
 No hooks configured.
@@ -90,7 +94,7 @@ worker-prod is idle: it joins the recreation.
 (Protected services: 0 s)
 ::endgroup::
 ::group::Recreate the services
-Image in use before the deploy: 91a22fc76782
+Image in use before the deploy: d464af5cbd8c
  Container deproi-example-prod-web-prod-1  Recreate
  Container deproi-example-prod-web-prod-1  Recreated
  Container deproi-example-prod-web-prod-1  Starting
@@ -99,12 +103,11 @@ Image in use before the deploy: 91a22fc76782
  Container deproi-example-prod-worker-prod-1  Recreated
  Container deproi-example-prod-worker-prod-1  Starting
  Container deproi-example-prod-worker-prod-1  Started
-(Recreate the services: 1 s)
+(Recreate the services: 4 s)
 ::endgroup::
 ::group::Wait for web-prod to be healthy
-health of web-prod: starting
 health of web-prod: healthy
-(Wait for web-prod to be healthy: 2 s)
+(Wait for web-prod to be healthy: 0 s)
 ::endgroup::
 ::group::Clean up old images
 DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
@@ -118,5 +121,5 @@ betterstack: off on this server
 cloudflare: purge off
 webhook: off
 post_deploy: No hooks configured.
-message: deproi-example-prod published: commit 46642052eea9 is live at http://127.0.0.1:8080 (6 s).
-result: SUCCESS commit=46642052eea9 previous=91a22fc76782 duration=6s protected=worker-prod:updated step=cleanup script=up_to_date
+message: deproi-example-prod published: commit 0688249540cd is live at http://127.0.0.1:8080 (7 s).
+result: SUCCESS commit=0688249540cd previous=d464af5cbd8c duration=7s protected=worker-prod:updated step=cleanup script=up_to_date

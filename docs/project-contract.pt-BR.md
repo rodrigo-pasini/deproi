@@ -4,6 +4,8 @@
 
 O Deproi funciona com qualquer stack que rode no Docker Compose. O seu projeto precisa de cinco coisas. O [exemplo](../example/) tem todas elas.
 
+O Deproi lê o `compose.yaml` por padrão. Se o seu arquivo for `docker-compose.yml` (ou se houver vários), liste-os em `compose.files` na [configuração](configuration.pt-BR.md#compose).
+
 ## 1. Um Dockerfile, e um healthcheck no serviço web
 
 O healthcheck é como o Deproi distingue uma versão quebrada de uma saudável. Sem ele, o deploy é recusado.
@@ -45,6 +47,10 @@ services:
 
 Todo serviço com `build:` precisa usar `image: <compose.image>:${DEPROI_TAG}`. Serviços que reaproveitam a sua imagem (workers) devem usar a mesma tag. Imagens de terceiros (`postgres:16`, `redis:7`) mantêm as próprias tags.
 
+O Deproi define `DEPROI_TAG` no ambiente do processo, que prevalece sobre qualquer valor num arquivo env: `DEPROI_TAG=local` no arquivo env é só o padrão para rodar o projeto à mão.
+
+Os serviços que usam a sua imagem são "do próprio projeto" e são recriados a cada deploy. Os serviços de terceiros (um banco de dados, um cache) são iniciados antes dos ganchos, se não estiverem rodando, e só são recriados quando a definição deles muda.
+
 ## 3. Um perfil e um sufixo por ambiente
 
 Se vários ambientes (ou apps) dividem um servidor, todo serviço de um ambiente leva o perfil dele e um sufixo no nome:
@@ -62,6 +68,10 @@ services:
 Com `compose.service_suffix: "-prod"`, o Deproi recusa uma definição em que um serviço sem o sufixo subiria: um serviço sem `profiles:` fica ativo em **todos** os perfis e acabaria em todos os projetos.
 
 Um servidor com um único ambiente pode dispensar perfis e sufixo.
+
+Num servidor compartilhado, cada ambiente também precisa das suas **próprias portas publicadas** (por exemplo, `${WEB_PORT}` no arquivo env: 3000 para produção, 3001 para staging) e do seu **próprio nome de imagem** (`compose.image`: `myapp` e `myapp-staging`), para que a limpeza de um nunca remova a imagem anterior do outro.
+
+Com perfis em todos os serviços, um `docker compose up` simples não sobe nada: rode o projeto à mão com `docker compose --env-file deploy/prod.compose.env --profile prod up`.
 
 ## 4. Um arquivo env versionado (recomendado)
 
@@ -90,6 +100,9 @@ Faça o commit do `deproi.py` no seu projeto, por padrão como `deploy/deproi.py
 - [ ] Nenhum segredo no repositório; eles ficam em `/etc/deproi/<name>.secrets.env`.
 - [ ] `deploy/deproi.py` está commitado.
 - [ ] As migrations mantêm a versão anterior funcionando (expanda agora, contraia num deploy posterior): a reversão não as desfaz.
+- [ ] Os serviços têm `restart: unless-stopped` (o Deproi nunca inicia sozinho um serviço protegido parado) e param rápido com `SIGTERM` (`init: true` se precisar).
+- [ ] Num servidor compartilhado: portas publicadas e nomes de imagem diferentes por ambiente.
+- [ ] `compose.files` lista o seu arquivo do Compose, se ele não for `compose.yaml`.
 - [ ] `docker compose --env-file deploy/<env>.compose.env --profile <env> config` funciona na sua máquina.
 
 Exemplos por stack: [receitas](recipes.pt-BR.md).

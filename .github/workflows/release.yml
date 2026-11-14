@@ -1,7 +1,7 @@
 # Publishes a Deproi release when a version tag is pushed (git tag v1.2.3 && git push origin v1.2.3).
 #
-# The release carries deproi.py and SHA256SUMS — exactly what the projects'
-# deproi-update.yml downloads and verifies.
+# The release carries deproi.py, the three setup scripts and SHA256SUMS, so that
+# everything that runs as root can be verified (deproi-update.yml checks deproi.py).
 name: Release
 
 on:
@@ -64,6 +64,6 @@ jobs:
           TAG: ${{ github.ref_name }}
         run: |
           mkdir dist
-          cp deproi.py dist/
-          (cd dist && sha256sum deproi.py > SHA256SUMS)
-          gh release create "$TAG" dist/deproi.py dist/SHA256SUMS --title "Deproi ${TAG#v}" --notes-file notes.md --verify-tag
+          cp deproi.py scripts/prepare-server.sh scripts/doctor.sh scripts/create-deploy-key.sh dist/
+          (cd dist && sha256sum deproi.py prepare-server.sh doctor.sh create-deploy-key.sh > SHA256SUMS)
+          gh release create "$TAG" dist/* --title "Deproi ${TAG#v}" --notes-file notes.md --verify-tag

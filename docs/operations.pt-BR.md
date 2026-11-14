@@ -56,15 +56,19 @@ Quando o resumo diz que o servidor não respondeu, nada foi alterado: confira `D
 ```bash
 journalctl -t deproi-myapp-prod -n 50            # inícios, resultados, pós-deploy
 journalctl -t deproi-myapp-prod | grep 'result:'  # histórico de resultados
-sudo docker compose -p myapp-prod logs --tail 100 web-prod
+sudo docker logs --tail 100 myapp-prod-web-prod-1
 sudo docker ps -a --filter label=com.docker.compose.project=myapp-prod
 ```
+
+O `docker logs <container>` não precisa de arquivo env. Nos comandos `docker compose`, passe os mesmos arquivos que o Deproi usa (`--env-file deploy/prod.compose.env --env-file /etc/deproi/myapp-prod.secrets.env --profile prod`), senão as variáveis do arquivo de segredos saem vazias.
 
 Depois de uma reversão, os contêineres da versão nova somem, mas a imagem construída fica: `docker image ls myapp`.
 
 ## Rodar um deploy de novo
 
 **Actions → Deploy production → Run workflow** publica de novo o último commit da branch (útil depois de mudar a configuração ou os segredos do servidor). No servidor: `sudo /usr/local/sbin/deproi-myapp-prod`.
+
+Publicar de novo o mesmo commit recria à força os serviços do próprio projeto (os que rodam a sua imagem), para que eles peguem os segredos novos. Os serviços de terceiros, como o banco de dados, continuam rodando, e os serviços protegidos ocupados seguem as regras de sempre.
 
 ## Pausar os deploys
 
@@ -76,12 +80,13 @@ Quando o Deproi não consegue se recuperar (`FAILED_ROLLBACK`), publique você m
 
 ```bash
 cd /srv/myapp-prod
-docker image ls myapp                                  # escolha uma tag que funcionou (12 caracteres hexadecimais)
-export DEPROI_TAG=<tag>
-sudo -E docker compose -p myapp-prod --env-file deploy/prod.compose.env \
-     --env-file /etc/deproi/myapp-prod.secrets.env --profile prod up -d --remove-orphans
+sudo docker image ls myapp                             # escolha uma tag que funcionou (12 caracteres hexadecimais)
+sudo env DEPROI_TAG=<tag> docker compose -p myapp-prod --env-file deploy/prod.compose.env \
+     --env-file /etc/deproi/myapp-prod.secrets.env --profile prod up -d web-prod
 sudo docker ps --filter label=com.docker.compose.project=myapp-prod
 ```
+
+Diga quais serviços trazer de volta (aqui, `web-prod`), para que um worker protegido ocupado não seja recriado no meio de uma tarefa. Tire o `--env-file` dos segredos se o ambiente não tiver nenhum.
 
 Depois corrija a branch. O próximo push faz o deploy normalmente.
 

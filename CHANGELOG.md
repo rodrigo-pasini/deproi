@@ -6,9 +6,25 @@ All notable changes to Deproi are documented here. The format follows [Keep a Ch
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-14
+
 ### Added
 
 - `scripts/try-locally.sh`: rehearse a project's deploy on a disposable local server container before touching a real one.
+
+### Changed
+
+- The deploy now starts third-party services (database, cache) that are not running yet, and waits for them to be healthy, before the hooks: migrations work on the very first deploy.
+- The health wait ends early when Docker reports `unhealthy` three times in a row, so a broken version rolls back in seconds instead of after the whole timeout.
+- Republishing the same commit force-recreates only the project's own services, never third-party ones such as the database.
+- Releases include `prepare-server.sh`, `doctor.sh` and `create-deploy-key.sh` in `SHA256SUMS`; the docs verify them before running. The updater checks `deproi.py` with `--ignore-missing`.
+- The starter config written by `prepare-server.sh` pins `$schema` to the installed version.
+
+### Documentation
+
+- Installation order that works: pause deploys, merge, prepare the server, create the key, resume. Fetch access for the checkout owner, `--port`, verified downloads.
+- Moving from an existing deployment (volumes, ports, orphans, old credentials); shared servers (ports, image names); protected services (order, rollback, graceful stop, restart policy); plan B and log commands fixed; Node.js recipe.
+- Findings from two pilot implementations by AI agents (Django + Postgres, Node + Redis with a protected worker).
 
 ## [0.1.0] - 2026-11-14
 

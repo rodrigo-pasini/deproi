@@ -70,7 +70,7 @@ class TestUpdateWorkflow:
         assert "SCRIPT: ops/deproi.py" in self.TEXT and "__DEPROI_" not in self.TEXT
 
     def test_verifies_checksums_and_only_opens_a_pull_request(self):
-        assert "sha256sum --check --strict SHA256SUMS" in self.TEXT
+        assert "sha256sum --check --strict --ignore-missing SHA256SUMS" in self.TEXT
         assert "gh pr create" in self.TEXT
         assert "ssh" not in self.TEXT
 
@@ -130,9 +130,9 @@ class TestServerFiles:
 
     def test_starter_config_written_by_prepare_server_is_valid(self):
         heredoc = self.PREPARE.split('cat > "$temporary" << EOF\n{')[1].split("\nEOF")[0]
-        text = "{" + heredoc.replace("\\$schema", "$schema").replace("$NAME", "myapp-prod").replace(
-            "$CHECKOUT", "/srv/myapp-prod"
-        ).replace("$OWNER", "ubuntu")
+        text = "{" + heredoc.replace("\\$schema", "$schema").replace("$VERSION", "0.2.0").replace(
+            "$NAME", "myapp-prod"
+        ).replace("$CHECKOUT", "/srv/myapp-prod").replace("$OWNER", "ubuntu")
         cfg = deproi.parse_config(json.loads(text), "myapp-prod", home_of=lambda user: "/home/x")
         assert cfg.web_service == "web"
 
