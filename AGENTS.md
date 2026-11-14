@@ -114,6 +114,8 @@ Work on a branch, never on a deploy branch.
 
 6. **Write `docs/deploy.md`** in the project: environments, branches, server paths, how to read a failed deploy, plan B (adapt [operations](docs/operations.md#plan-b-deploy-by-hand)), and a link to Deproi. Set `docs` in the config to this file's URL.
 7. **Check:** `docker compose … config` works; the health check fails when the app is broken (try it locally if you can); no secret in the diff.
+   **Rehearse it** if Docker is available: commit on your branch, then
+   `/tmp/deproi/scripts/try-locally.sh --project . --config myapp-prod.json --ref <your branch>` (add `--secrets <file>` with dummy values if the compose file needs them). It must end with "Rehearsal passed". Include the result in the pull request description.
 8. **Open a pull request** with the changes. Do not merge it yourself.
 
 ### 6. Hand over to the human

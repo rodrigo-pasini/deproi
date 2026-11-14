@@ -6,6 +6,10 @@ Todas as mudanças relevantes do Deproi ficam registradas aqui. O formato segue 
 
 ## [Não lançado]
 
+### Adicionado
+
+- `scripts/try-locally.sh`: ensaia o deploy de um projeto num contêiner servidor descartável, antes de mexer num servidor real.
+
 ## [0.1.0] - 2026-11-14
 
 ### Adicionado

@@ -18,6 +18,17 @@ Nos exemplos, o ambiente se chama `myapp-prod`, faz deploy da branch `main`, e o
 - O projeto já segue o [contrato do projeto](project-contract.pt-BR.md) e tem o `deploy/deproi.py` commitado.
 - O servidor consegue dar `git fetch` no repositório (uma deploy key só de leitura ou um token para o dono do checkout).
 
+## Ensaie antes (opcional, recomendado)
+
+💻 Antes de mexer no servidor, ensaie o deploy inteiro na sua máquina. Num clone do Deproi, com Docker:
+
+```bash
+scripts/try-locally.sh --project ../myapp --config myapp-prod.json --ref my-branch \
+    --secrets myapp-prod.secrets.env
+```
+
+Um contêiner faz o papel do servidor: ele roda o `prepare-server.sh` e o `doctor.sh`, instala a sua configuração, faz o deploy por SSH com a chave presa exatamente como o GitHub faz e depois implanta um segundo commit. Se terminar com "Rehearsal passed", o projeto e a configuração estão prontos; se não, o log do deploy mostra o motivo.
+
 ## 1. 🖥️ Clone o projeto no servidor
 
 ```bash

@@ -6,6 +6,10 @@ All notable changes to Deproi are documented here. The format follows [Keep a Ch
 
 ## [Unreleased]
 
+### Added
+
+- `scripts/try-locally.sh`: rehearse a project's deploy on a disposable local server container before touching a real one.
+
 ## [0.1.0] - 2026-11-14
 
 ### Added

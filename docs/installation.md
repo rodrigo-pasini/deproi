@@ -18,6 +18,17 @@ In the examples the environment is called `myapp-prod`, it deploys the branch `m
 - The project already follows the [project contract](project-contract.md) and has `deploy/deproi.py` committed.
 - The server can `git fetch` the repository (a read-only deploy key or a token for the checkout owner).
 
+## Rehearse first (optional, recommended)
+
+💻 Before touching the server, rehearse the whole deploy on your machine. From a clone of Deproi, with Docker:
+
+```bash
+scripts/try-locally.sh --project ../myapp --config myapp-prod.json --ref my-branch \
+    --secrets myapp-prod.secrets.env
+```
+
+A container plays the server: it runs `prepare-server.sh` and `doctor.sh`, installs your config, deploys over SSH with a locked key exactly like GitHub does, then deploys a second commit. If it ends with "Rehearsal passed", your project and config are ready; if not, the deploy log shows why.
+
 ## 1. 🖥️ Clone the project on the server
 
 ```bash

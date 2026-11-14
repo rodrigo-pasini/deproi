@@ -56,6 +56,8 @@ Faça estas verificações e anote as respostas. Não mude nada ainda.
 5. **Ambientes:** quais branches publicam onde (ex.: `main` → produção, `develop` → teste)? Vários ambientes dividem um servidor? Se sim, todo serviço precisa de um perfil e de um sufixo (`-prod`, `-test`).
 6. **Migrations:** framework e comando (veja as [receitas](docs/recipes.pt-BR.md)). As migrations são retrocompatíveis (a versão anterior precisa continuar funcionando)? Aponte as arriscadas ao humano.
 7. **Workers de longa duração:** workers de fila com jobs longos? Eles viram serviços protegidos com um `busy_check`.
+   **Ensaie** se houver Docker disponível: commite na sua branch e rode
+   `/tmp/deproi/scripts/try-locally.sh --project . --config myapp-prod.json --ref <sua branch>` (adicione `--secrets <arquivo>` com valores fictícios se o compose precisar). Tem que terminar com "Rehearsal passed". Coloque o resultado na descrição do pull request.
 8. **Segredos:** quais variáveis são secretas? Elas vão para `/etc/deproi/<name>.secrets.env` e são referenciadas como `${VAR}` no compose.
 9. **Deploy atual:** como o projeto faz deploy hoje? Algo que o Deproi precisa continuar fazendo (arquivos estáticos, purga de cache, notificações)? Mapeie cada item para um gancho ou integração.
 10. **Valide localmente:** `docker compose --env-file deploy/<env>.compose.env --profile <env> config` precisa funcionar depois das suas mudanças.
