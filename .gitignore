@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+.idea/
+.vscode/
+.DS_Store
+
+# Never commit deploy keys or server secrets.
+*.pem
+*.key
+id_ed25519*
+*.secrets.env
+
+# Internal planning notes (contain details of the origin project) — local only.
+PLANO.md
