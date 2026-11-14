@@ -67,9 +67,17 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - name: Lint GitHub workflows and templates
+      - name: Lint this repository's workflows
+        run: docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12 -color
+      - name: Lint the rendered workflow templates
         run: |
-          docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:1.7.12 -color
+          work=$(mktemp -d)
+          mkdir -p "$work/.github/workflows"
+          scripts/render-workflow.sh deploy --name myapp-prod --branch main --environment production \
+            > "$work/.github/workflows/deploy-production.yml"
+          scripts/render-workflow.sh update > "$work/.github/workflows/deproi-update.yml"
+          git -C "$work" init -q
+          docker run --rm -v "$work:/repo" -w /repo rhysd/actionlint:1.7.12 -color
 
   shell:
     name: shellcheck

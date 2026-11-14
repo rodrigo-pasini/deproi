@@ -1,0 +1,69 @@
+# Publishes a Deproi release when a version tag is pushed (git tag v1.2.3 && git push origin v1.2.3).
+#
+# The release carries deproi.py and SHA256SUMS — exactly what the projects'
+# deproi-update.yml downloads and verifies.
+name: Release
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+
+permissions: {}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.10"
+
+      - name: The tag matches DEPROI_VERSION
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version=$(sed -n 's/^DEPROI_VERSION = "\(.*\)"$/\1/p' deproi.py)
+          if [ "v$version" != "$TAG" ]; then
+            echo "::error::tag $TAG does not match DEPROI_VERSION $version"
+            exit 1
+          fi
+
+      - name: Tests on the oldest supported Python
+        run: |
+          pip install -r requirements-dev.txt
+          pytest -q
+
+      - name: Release notes from the changelog
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="${TAG#v}"
+          awk -v v="$version" '
+            $0 ~ "^## \\[" v "\\]" { found = 1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then
+            echo "::error::CHANGELOG.md has no section ## [$version]"
+            exit 1
+          fi
+          {
+            echo
+            echo "---"
+            echo "Português: [CHANGELOG.pt-BR.md](https://github.com/${GITHUB_REPOSITORY}/blob/${TAG}/CHANGELOG.pt-BR.md)"
+          } >> notes.md
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          mkdir dist
+          cp deproi.py dist/
+          (cd dist && sha256sum deproi.py > SHA256SUMS)
+          gh release create "$TAG" dist/deproi.py dist/SHA256SUMS --title "Deproi ${TAG#v}" --notes-file notes.md --verify-tag

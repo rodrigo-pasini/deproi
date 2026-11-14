@@ -1,0 +1,10 @@
+# /home/deproi/.ssh/authorized_keys — one line per Deproi environment on this server.
+#
+# Owner deproi:deproi, mode 0600, inside /home/deproi/.ssh (deproi:deproi, 0700).
+# scripts/prepare-server.sh writes these lines; this file shows their shape.
+#
+# `restrict` turns off pty, port, agent and X11 forwarding.
+# `command=` ignores whatever the client asks and always runs that environment's deploy.
+# Together, the key is good for exactly one thing. The trailing comment is how
+# prepare-server.sh finds the line to replace: keep it.
+restrict,command="sudo -n /usr/local/sbin/deproi-__DEPROI_NAME__" ssh-ed25519 __PUBLIC_KEY__ deproi:__DEPROI_NAME__

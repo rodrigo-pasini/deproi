@@ -1,0 +1,12 @@
+# /etc/sudoers.d/deproi-__DEPROI_NAME__ — written by scripts/prepare-server.sh.
+#
+# Owner root:root, mode 0440, validated with `visudo -cf` before it goes in place.
+#
+# The deproi user may run exactly one command as root, without arguments: the
+# trailing "" forbids any argument. Nothing else.
+#
+# Defaults only KEEPS two variables sudo would erase, so the script can record
+# them in syslog (which command the SSH client asked for, and from where). The
+# script never executes them nor decides anything by them.
+Defaults!/usr/local/sbin/deproi-__DEPROI_NAME__ env_keep += "SSH_ORIGINAL_COMMAND SSH_CLIENT"
+deproi ALL=(root) NOPASSWD: /usr/local/sbin/deproi-__DEPROI_NAME__ ""

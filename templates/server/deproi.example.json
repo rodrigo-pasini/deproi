@@ -1,0 +1,27 @@
+{
+  "$schema": "https://raw.githubusercontent.com/rodrigo-pasini/deproi/main/deproi.schema.json",
+  "name": "myapp-prod",
+  "language": "en",
+  "checkout": {
+    "path": "/srv/myapp-prod",
+    "owner": "ubuntu",
+    "branch": "main"
+  },
+  "compose": {
+    "project": "myapp-prod",
+    "files": ["compose.yaml"],
+    "env_file": "deploy/prod.compose.env",
+    "secrets_file": "/etc/deproi/myapp-prod.secrets.env",
+    "profiles": ["prod"],
+    "service_suffix": "-prod",
+    "web_service": "web-prod",
+    "image": "myapp"
+  },
+  "url": "https://app.example.com",
+  "docs": "https://github.com/acme/myapp/blob/main/docs/deploy.md",
+  "hooks": {
+    "migrate": [
+      { "name": "migrate", "command": ["python", "manage.py", "migrate", "--noinput"] }
+    ]
+  }
+}
