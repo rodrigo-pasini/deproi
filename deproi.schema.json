@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/rodrigo-pasini/deproi/main/deproi.schema.json",
+  "title": "Deproi server configuration",
+  "description": "/etc/deproi/<name>.json — owned by root, not writable by others. Docs: https://github.com/rodrigo-pasini/deproi/blob/main/docs/configuration.md",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "checkout", "compose"],
+  "$defs": {
+    "positiveInt": { "type": "integer", "minimum": 1 },
+    "argv": {
+      "description": "A command as a list of arguments, never a shell string.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "insidePath": {
+      "description": "A path relative to the checkout, without '..'.",
+      "type": "string",
+      "minLength": 1,
+      "not": { "pattern": "^(/|\\.\\.)" }
+    },
+    "absolutePath": { "type": "string", "pattern": "^/" },
+    "hook": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "command"],
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,40}$", "description": "Shown in the log and the summary." },
+        "command": { "$ref": "#/$defs/argv", "description": "Runs with `docker compose run --rm --no-deps <service>` on the NEW image." },
+        "service": { "type": "string", "description": "Compose service whose image runs the hook. Default: compose.web_service." },
+        "env": {
+          "type": "object",
+          "description": "Extra environment variables, passed with -e.",
+          "propertyNames": { "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+          "additionalProperties": { "type": "string" }
+        },
+        "timeout": { "$ref": "#/$defs/positiveInt", "description": "Seconds. Default: timeouts.hook (migrate hooks share timeouts.migrations)." },
+        "on_failure": {
+          "enum": ["fail", "refuse", "warn"],
+          "description": "fail → FAILED_NO_CHANGE; refuse → REFUSED; warn → log and continue. Defaults: pre_migrate/migrate fail, post_migrate/post_deploy warn (post_deploy only accepts warn)."
+        }
+      }
+    },
+    "hookList": { "type": "array", "items": { "$ref": "#/$defs/hook" } }
+  },
+  "properties": {
+    "$schema": { "type": "string" },
+    "config_version": { "const": 1, "description": "Default 1." },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,62}$",
+      "description": "Must match the installed command: /usr/local/sbin/deproi-<name> reads /etc/deproi/<name>.json."
+    },
+    "language": { "enum": ["en", "pt-BR"], "description": "Language of the messages for the operator. Default en." },
+    "checkout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "owner", "branch"],
+      "properties": {
+        "path": { "$ref": "#/$defs/absolutePath", "description": "The git checkout on the server." },
+        "owner": { "type": "string", "not": { "const": "root" }, "description": "User that owns the checkout; git runs as this user." },
+        "branch": { "type": "string", "description": "The branch this environment publishes." },
+        "remote": { "type": "string", "description": "Default origin." }
+      }
+    },
+    "compose": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project", "web_service", "image"],
+      "properties": {
+        "project": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$", "description": "Compose project name, always passed explicitly." },
+        "files": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/insidePath" }, "description": "Default [\"compose.yaml\"]." },
+        "env_file": { "$ref": "#/$defs/insidePath", "description": "Versioned env file. When set, its COMPOSE_PROJECT_NAME must equal compose.project (checked before the checkout moves)." },
+        "secrets_file": { "type": "string", "description": "Untracked env file with secrets. Absolute (recommended, e.g. /etc/deproi/<name>.secrets.env) or relative to the checkout." },
+        "profiles": { "type": "array", "items": { "type": "string" }, "description": "Compose profiles of this environment." },
+        "service_suffix": { "type": "string", "description": "Every service of the definition must end with it (fence between environments on one server)." },
+        "web_service": { "type": "string", "description": "The service whose health check decides success or rollback." },
+        "image": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._/-]*$", "description": "Image repository, without tag. Built services must use image: <image>:${DEPROI_TAG}." },
+        "tag_variables": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" }, "description": "Variables set to the commit tag for Compose interpolation. Default [\"DEPROI_TAG\"]." }
+      }
+    },
+    "url": { "type": "string", "description": "Public URL, shown in the success message and default host for the Cloudflare purge." },
+    "script_path": { "$ref": "#/$defs/insidePath", "description": "Where the project versions deproi.py. Default deploy/deproi.py." },
+    "docs": { "type": "string", "description": "Link shown in failure messages (your plan B). Default: Deproi's operations guide." },
+    "timeouts": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Seconds.",
+      "properties": {
+        "lock": { "$ref": "#/$defs/positiveInt", "description": "Wait for another deploy. Default 1800." },
+        "build": { "$ref": "#/$defs/positiveInt", "description": "Default 2400." },
+        "migrations": { "$ref": "#/$defs/positiveInt", "description": "Shared by all migrate hooks. Default 2400." },
+        "health": { "$ref": "#/$defs/positiveInt", "description": "Wait for the web service to be healthy. Default 240." },
+        "hook": { "$ref": "#/$defs/positiveInt", "description": "Default per hook. Default 600." },
+        "post_deploy": { "$ref": "#/$defs/positiveInt", "description": "Default per post_deploy hook. Default 300." }
+      }
+    },
+    "build": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "low_priority": { "type": "boolean", "description": "Build with nice/ionice. Default true." },
+        "pull": { "type": "boolean", "description": "Pass --pull to the build. Default false." }
+      }
+    },
+    "health_interval": { "$ref": "#/$defs/positiveInt", "description": "Seconds between health checks. Default 5." },
+    "min_free_disk_gb": { "$ref": "#/$defs/positiveInt", "description": "Minimum free space for Docker. Default 5." },
+    "hooks": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pre_migrate": { "$ref": "#/$defs/hookList", "description": "Checks with the new image before any change (e.g. framework deploy checks)." },
+        "migrate": { "$ref": "#/$defs/hookList", "description": "Database migrations." },
+        "post_migrate": { "$ref": "#/$defs/hookList", "description": "After migrations, before recreating (e.g. sync feature flags)." },
+        "post_deploy": { "$ref": "#/$defs/hookList", "description": "Detached, after the new version is live. Never changes the outcome." }
+      }
+    },
+    "protected_services": {
+      "type": "array",
+      "description": "Services that must not be recreated in the middle of their work.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["service", "busy_check"],
+        "properties": {
+          "service": { "type": "string" },
+          "busy_check": { "$ref": "#/$defs/argv", "description": "Runs with docker exec. Exit 0 = idle, 1 = busy, anything else = no answer (treated as busy)." },
+          "quiesce": { "$ref": "#/$defs/argv", "description": "Optional: stop taking new work before recreating (busy_check runs again after it)." },
+          "resume": { "$ref": "#/$defs/argv", "description": "Optional: undo quiesce when the service is not recreated." }
+        }
+      }
+    },
+    "integrations": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "All optional. Tokens live in root-only (0600) files, never in this JSON.",
+      "properties": {
+        "betterstack": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["credentials_file"],
+          "properties": {
+            "credentials_file": { "$ref": "#/$defs/absolutePath", "description": "Env file with BETTERSTACK_UPTIME_TOKEN and/or BETTERSTACK_ERRORS_TOKEN." },
+            "monitors": { "type": "array", "items": { "type": "string", "pattern": "^[0-9]+$" }, "description": "Uptime monitor ids that get a grace period while services are recreated." },
+            "grace_period": { "$ref": "#/$defs/positiveInt", "description": "Seconds. Default 1200." },
+            "errors": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["application_id", "environment"],
+              "properties": {
+                "application_id": { "type": "string", "pattern": "^[0-9]+$" },
+                "environment": { "type": "string" }
+              }
+            }
+          }
+        },
+        "cloudflare": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["credentials_file", "zone_id"],
+          "properties": {
+            "credentials_file": { "$ref": "#/$defs/absolutePath", "description": "Env file with CLOUDFLARE_API_TOKEN (Zone → Cache Purge)." },
+            "zone_id": { "type": "string", "pattern": "^[0-9a-f]{32}$" },
+            "hosts": { "type": "array", "minItems": 1, "items": { "type": "string" }, "description": "Default: the host of url." }
+          }
+        },
+        "webhook": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["url_file"],
+          "properties": {
+            "url_file": { "$ref": "#/$defs/absolutePath", "description": "Env file with WEBHOOK_URL (https only)." },
+            "format": { "enum": ["json", "slack", "discord"], "description": "Default json." },
+            "events": { "type": "array", "items": { "enum": ["success", "failure"] }, "description": "Default both." }
+          }
+        }
+      }
+    }
+  }
+}
