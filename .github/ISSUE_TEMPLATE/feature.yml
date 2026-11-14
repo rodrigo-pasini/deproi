@@ -1,0 +1,22 @@
+name: ✨ Feature request / Pedido de funcionalidade
+description: Suggest an improvement. / Sugira uma melhoria.
+labels: [enhancement, triage]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem / O problema
+      description: What are you trying to do, and what gets in the way? / O que você está tentando fazer e o que atrapalha?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal / Proposta
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Ground rules / Regras básicas
+      options:
+        - label: This keeps the workflow logic-free and the script argument-free, stdlib-only. / Isto mantém o workflow sem lógica e o script sem argumentos, só com a stdlib.
+          required: true

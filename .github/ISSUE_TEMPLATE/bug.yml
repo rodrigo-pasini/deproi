@@ -1,0 +1,38 @@
+name: 🐛 Bug report / Relato de bug
+description: Something does not work as documented. / Algo não funciona como documentado.
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never paste private keys, tokens, hostnames or secrets files.** / **Nunca cole chaves privadas, tokens, hosts ou arquivos de segredos.**
+  - type: input
+    id: version
+    attributes:
+      label: Deproi version / Versão do Deproi
+      description: "`grep DEPROI_VERSION deploy/deproi.py`"
+    validations:
+      required: true
+  - type: input
+    id: server
+    attributes:
+      label: Server OS and Python / SO e Python do servidor
+      placeholder: Ubuntu 24.04, Python 3.12, Docker 27, Compose v2.29
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened and what you expected / O que aconteceu e o que você esperava
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: The `result:` line and the failing step log / A linha `result:` e o log do passo que falhou
+      render: text
+  - type: textarea
+    id: config
+    attributes:
+      label: Your deproi.json, with secrets removed / Seu deproi.json, sem segredos
+      render: json

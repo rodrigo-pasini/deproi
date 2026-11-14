@@ -31,7 +31,8 @@ EXEMPT_FILES = {
     "CLAUDE.md",  # a one-line pointer to AGENTS.md, read by tools, not people
     "PLANO.md",  # internal planning notes (pt-BR only), removed before v1.0
 }
-EXEMPT_DIRS = {".git", ".venv", "venv", "node_modules", ".pytest_cache", ".ruff_cache", "fixtures"}
+# .github holds GitHub-specific files (templates) that GitHub reads from a single path: bilingual inline.
+EXEMPT_DIRS = {".git", ".github", ".venv", "venv", "node_modules", ".pytest_cache", ".ruff_cache", "fixtures"}
 
 _HEADING = re.compile(r"^(#{1,6})\s+\S")
 _FENCE = re.compile(r"^\s*(```+|~~~+)\s*([\w+-]*)")
