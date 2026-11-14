@@ -6,6 +6,8 @@ Todas as mudanças relevantes do Deproi ficam registradas aqui. O formato segue 
 
 ## [Não lançado]
 
+## [0.1.0] - 2026-11-14
+
 ### Adicionado
 
 - Esqueleto do repositório: licença MIT, guia de contribuição, CI (lint, testes em Python 3.10 e 3.12, lint dos workflows e dos scripts shell).

@@ -6,6 +6,8 @@ All notable changes to Deproi are documented here. The format follows [Keep a Ch
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-14
+
 ### Added
 
 - Repository skeleton: MIT license, contribution guide, CI (lint, tests on Python 3.10 and 3.12, workflow lint, shell lint).
